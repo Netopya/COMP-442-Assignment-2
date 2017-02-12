@@ -52,8 +52,20 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Lexical\ErrorToken.cs" />
+    <Compile Include="Lexical\ICharacterMatch.cs" />
+    <Compile Include="Lexical\IndentifierToken.cs" />
+    <Compile Include="Lexical\IState.cs" />
+    <Compile Include="Lexical\IToken.cs" />
+    <Compile Include="Lexical\LexicalAnalyzer.cs" />
+    <Compile Include="Lexical\ListCharacterMatch.cs" />
+    <Compile Include="Lexical\SimpleCharacterMatch.cs" />
+    <Compile Include="Lexical\SimpleFinalState.cs" />
+    <Compile Include="Lexical\SimpleIntermediateState.cs" />
+    <Compile Include="Lexical\SimpleToken.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tokens\Token.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

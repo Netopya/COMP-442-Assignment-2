@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace COMP442_Assignment1.Lexical
+namespace COMP442_Assignment2.Lexical
 {
     /*
         An interface that defines a class that can except a 
