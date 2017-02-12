@@ -81,7 +81,7 @@ namespace COMP442_Assignment2.Lexical
             // Operators
             IState s14 = new SimpleFinalState(false, TokenList.Period, false);
             IState s15 = new SimpleFinalState(false, TokenList.SemiColon, false);
-            IState s16 = new SimpleFinalState(false, TokenList.SemiColon, false);
+            IState s16 = new SimpleFinalState(false, TokenList.Comma, false);
             IState s17 = new SimpleFinalState(false, TokenList.Plus, false);
             IState s18 = new SimpleFinalState(false, TokenList.Minus, false);
 
