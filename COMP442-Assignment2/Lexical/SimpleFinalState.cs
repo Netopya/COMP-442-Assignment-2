@@ -1,4 +1,5 @@
-﻿using System;
+﻿using COMP442_Assignment2.Tokens;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,20 +13,20 @@ namespace COMP442_Assignment2.Lexical
     class SimpleFinalState : IState
     {
         private bool _backTrack;
-        private string _tokenName;
+        private Token _token;
         private bool _tokenShowContent;
 
-        public SimpleFinalState(bool backTrack, string tokenName, bool tokenShowContent)
+        public SimpleFinalState(bool backTrack, Token token, bool tokenShowContent)
         {
             this._backTrack = backTrack;
-            this._tokenName = tokenName;
+            this._token = token;
             _tokenShowContent = tokenShowContent;
         }
 
-        public SimpleFinalState(string tokenName)
+        public SimpleFinalState(Token token)
         {
             _backTrack = false;
-            this._tokenName = tokenName;
+            this._token = token;
             _tokenShowContent = false;
         }
 
@@ -55,17 +56,17 @@ namespace COMP442_Assignment2.Lexical
         // given to this final state
         public IToken token()
         {
-            if(_tokenName == "Identifier")
+            if(_token == TokenList.Identifier)
             {
                 return new IndentifierToken();
             }
-            else if(_tokenName == "Error")
+            else if(_token == TokenList.Error)
             {
                 return new ErrorToken();
             }
             else
             {
-                return new SimpleToken(_tokenName, _tokenShowContent);
+                return new SimpleToken(_token, _tokenShowContent);
             }
         }
     }

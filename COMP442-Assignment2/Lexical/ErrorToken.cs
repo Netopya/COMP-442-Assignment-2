@@ -9,7 +9,7 @@ namespace COMP442_Assignment2.Lexical
     // A token representing an error
     class ErrorToken : SimpleToken
     {
-        public ErrorToken() : base("Error", true)
+        public ErrorToken() : base(Tokens.TokenList.Error, true)
         {
 
         }
