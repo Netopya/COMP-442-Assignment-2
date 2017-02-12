@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace COMP442_Assignment1.Lexical
+namespace COMP442_Assignment2.Lexical
 {
     /*
         An interface representing a node in the DFA, it can be a final state or

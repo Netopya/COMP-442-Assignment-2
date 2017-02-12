@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace COMP442_Assignment1.Lexical
+namespace COMP442_Assignment2.Lexical
 {
     /*
         A single node in the DFA that is a final state
