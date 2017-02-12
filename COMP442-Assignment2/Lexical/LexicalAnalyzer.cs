@@ -85,8 +85,8 @@ namespace COMP442_Assignment2.Lexical
             IState s18 = new SimpleFinalState(false, "Minus", false);
 
             // Numbers
-            IState s12 = new SimpleFinalState(true, "Float (non-zero)", true);
-            IState s11 = new SimpleFinalState(true, "Float (zero)", true);
+            IState s12 = new SimpleFinalState(true, "Float (non-zero)", true); // Float (non-zero)
+            IState s11 = new SimpleFinalState(true, "Float (zero)", true); // Float (zero)
             IState s13 = new SimpleIntermediateState(err);
             IState s10 = new SimpleIntermediateState(s12);
             IState s9 = new SimpleIntermediateState(s11);
@@ -101,8 +101,8 @@ namespace COMP442_Assignment2.Lexical
             s8.addTransition(zero, s9);
             s8.addTransition(nonZero, s10);
 
-            IState s7 = new SimpleFinalState(true, "Integer (non-zero)", true);
-            IState s5 = new SimpleFinalState(true, "Integer (zero)", true);
+            IState s7 = new SimpleFinalState(true, "Integer (non-zero)", true); // Float (non-zero)
+            IState s5 = new SimpleFinalState(true, "Integer (zero)", true); // Float (zero)
             IState s6 = new SimpleIntermediateState(s7);
             s6.addTransition(digit, s6);
             s6.addTransition(period, s8);

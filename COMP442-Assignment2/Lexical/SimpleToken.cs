@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using COMP442_Assignment2.Tokens;
 
 namespace COMP442_Assignment2.Lexical
 {
@@ -12,14 +13,14 @@ namespace COMP442_Assignment2.Lexical
     */
     class SimpleToken : IToken
     {
-        protected string _name;
+        protected Token _token;
         private string _content = string.Empty;
         protected bool _showContent = false;
         private int _line = -1;
 
-        public SimpleToken(string name, bool showContent)
+        public SimpleToken(Token token, bool showContent)
         {
-            _name = name;
+            _token = token;
             _showContent = showContent;
         }
 
@@ -29,11 +30,11 @@ namespace COMP442_Assignment2.Lexical
         {
             if(_showContent)
             {
-                return string.Format("<{0} ({1}) Line: {2}>", _name, _content, _line);
+                return string.Format("<{0} ({1}) Line: {2}>", _token.getName(), _content, _line);
             }
             else
             {
-                return string.Format("<{0} Line: {1}>", _name, _line);
+                return string.Format("<{0} Line: {1}>", _token.getName(), _line);
             }
         }
 
@@ -46,6 +47,11 @@ namespace COMP442_Assignment2.Lexical
         public virtual bool isError()
         {
             return false;
+        }
+
+        public Token getToken()
+        {
+            return _token;
         }
     }
 }

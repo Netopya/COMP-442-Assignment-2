@@ -1,4 +1,5 @@
-﻿using System;
+﻿using COMP442_Assignment2.Tokens;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,9 +14,24 @@ namespace COMP442_Assignment2.Lexical
     */
     class IndentifierToken : SimpleToken
     {
-        HashSet<string> ReservedWords = new HashSet<string> { "and", "not", "or", "if", "then", "else", "for", "class", "int", "float", "get", "put", "return", "program" };
+        Dictionary<string, Token> ReservedWords = new Dictionary<string, Token> {
+            { "and",        TokenList.And },
+            { "not",        TokenList.Not },
+            { "or",         TokenList.Or },
+            { "if",         TokenList.If },
+            { "then",       TokenList.Then },
+            { "else",       TokenList.Else },
+            { "for",        TokenList.For },
+            { "class",      TokenList.Class },
+            { "int",        TokenList.IntRes },
+            { "float",      TokenList.FloatRes },
+            { "get",        TokenList.Get },
+            { "put",        TokenList.Put },
+            { "return",     TokenList.Return },
+            { "program",    TokenList.Program }
+        };
 
-        public IndentifierToken() : base("Identifier", true)
+        public IndentifierToken() : base(TokenList.Identifier, true)
         {
 
         }
@@ -23,10 +39,10 @@ namespace COMP442_Assignment2.Lexical
         public override void setInfo(string content, int line)
         {
             string name = content.Trim();
-            if(ReservedWords.Contains(name))
+            if(ReservedWords.Keys.Contains(name))
             {
                 _showContent = false;
-                _name = content;
+                _token = ReservedWords[name];
             }
 
             base.setInfo(content, line);

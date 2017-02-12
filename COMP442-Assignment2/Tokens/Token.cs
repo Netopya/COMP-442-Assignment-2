@@ -54,6 +54,21 @@ namespace COMP442_Assignment2.Tokens
         public static Token Integer = new Token("Integer");
 
         public static Token Identifier = new Token("Identifier");
+
+        public static Token And = new Token("and");
+        public static Token Not = new Token("not");
+        public static Token Or = new Token("or");
+        public static Token If = new Token("if");
+        public static Token Then = new Token("then");
+        public static Token Else = new Token("else");
+        public static Token For = new Token("for");
+        public static Token Class = new Token("class");
+        public static Token IntRes = new Token("int");
+        public static Token FloatRes = new Token("float");
+        public static Token Get = new Token("get");
+        public static Token Put = new Token("put");
+        public static Token Return = new Token("return");
+        public static Token Program = new Token("program");
     }
 
 }

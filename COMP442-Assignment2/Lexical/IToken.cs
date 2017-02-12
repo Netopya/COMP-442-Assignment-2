@@ -1,4 +1,5 @@
-﻿using System;
+﻿using COMP442_Assignment2.Tokens;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +16,6 @@ namespace COMP442_Assignment2.Lexical
         string getName();
         void setInfo(string content, int line);
         bool isError();
+        Token getToken();
     }
 }
