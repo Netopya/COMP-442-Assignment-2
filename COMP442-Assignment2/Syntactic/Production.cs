@@ -10,10 +10,14 @@ namespace COMP442_Assignment2.Syntactic
     class Production : IProduceable
     {
         string _name;
+        List<Token> _firstSet;
+        List<Token> _followSet;
 
-        public Production(string name)
+        public Production(string name, List<Token> firstSet, List<Token> followSet)
         {
             _name = name;
+            _firstSet = firstSet;
+            _followSet = followSet;
         }
 
         public string getProductName()
