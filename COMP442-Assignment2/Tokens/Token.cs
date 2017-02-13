@@ -1,4 +1,5 @@
-﻿using System;
+﻿using COMP442_Assignment2.Syntactic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace COMP442_Assignment2.Tokens
 {
-    public class Token
+    public class Token : IProduceable
     {
         private string name;
 
@@ -16,6 +17,11 @@ namespace COMP442_Assignment2.Tokens
         }
 
         public string getName()
+        {
+            return name;
+        }
+
+        public string getProductName()
         {
             return name;
         }
@@ -69,6 +75,8 @@ namespace COMP442_Assignment2.Tokens
         public static Token Put = new Token("put");
         public static Token Return = new Token("return");
         public static Token Program = new Token("program");
+
+        public static Token EndOfProgram = new Token("$");
     }
 
 }

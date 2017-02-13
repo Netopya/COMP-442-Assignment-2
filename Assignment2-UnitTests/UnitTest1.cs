@@ -30,7 +30,7 @@ namespace Assignment2_UnitTests
             Assert.AreEqual("<Identifier (Hello_123) Line: 1>", output[0].getName());
 
             output = lexicalAnalyzer.Tokenize("123a");
-            Assert.AreEqual("<Integer (non-zero) (123) Line: 1>", output[0].getName());
+            Assert.AreEqual("<Integer (123) Line: 1>", output[0].getName());
             Assert.AreEqual("<Identifier (a) Line: 1>", output[1].getName());
         }
 
@@ -38,31 +38,31 @@ namespace Assignment2_UnitTests
         public void TestIntegers()
         {
             var output = lexicalAnalyzer.Tokenize("123");
-            Assert.AreEqual("<Integer (non-zero) (123) Line: 1>", output[0].getName());
+            Assert.AreEqual("<Integer (123) Line: 1>", output[0].getName());
 
             output = lexicalAnalyzer.Tokenize("0");
-            Assert.AreEqual("<Integer (zero) (0) Line: 1>", output[0].getName());
+            Assert.AreEqual("<Integer (0) Line: 1>", output[0].getName());
 
             output = lexicalAnalyzer.Tokenize("123-123");
-            Assert.AreEqual("<Integer (non-zero) (123) Line: 1>", output[0].getName());
+            Assert.AreEqual("<Integer (123) Line: 1>", output[0].getName());
             Assert.AreEqual("<Minus Line: 1>", output[1].getName());
-            Assert.AreEqual("<Integer (non-zero) (123) Line: 1>", output[2].getName());
+            Assert.AreEqual("<Integer (123) Line: 1>", output[2].getName());
         }
 
         [TestMethod]
         public void TestFloats()
         {
             var output = lexicalAnalyzer.Tokenize("1.023");
-            Assert.AreEqual("<Float (non-zero) (1.023) Line: 1>", output[0].getName());
+            Assert.AreEqual("<Float (1.023) Line: 1>", output[0].getName());
 
             output = lexicalAnalyzer.Tokenize("0.023");
-            Assert.AreEqual("<Float (non-zero) (0.023) Line: 1>", output[0].getName());
+            Assert.AreEqual("<Float (0.023) Line: 1>", output[0].getName());
 
             output = lexicalAnalyzer.Tokenize("0.0230");
             Assert.AreEqual("<Error (0.0230) Line: 1>", output[0].getName());
 
             output = lexicalAnalyzer.Tokenize("0.0");
-            Assert.AreEqual("<Float (zero) (0.0) Line: 1>", output[0].getName());
+            Assert.AreEqual("<Float (0.0) Line: 1>", output[0].getName());
 
             output = lexicalAnalyzer.Tokenize("1.0120ab");
             Assert.AreEqual("<Error (1.0120a) Line: 1>", output[0].getName());
@@ -70,8 +70,8 @@ namespace Assignment2_UnitTests
 
             output = lexicalAnalyzer.Tokenize(".012");
             Assert.AreEqual("<Period Line: 1>", output[0].getName());
-            Assert.AreEqual("<Integer (zero) (0) Line: 1>", output[1].getName());
-            Assert.AreEqual("<Integer (non-zero) (12) Line: 1>", output[2].getName());
+            Assert.AreEqual("<Integer (0) Line: 1>", output[1].getName());
+            Assert.AreEqual("<Integer (12) Line: 1>", output[2].getName());
         }
 
         [TestMethod]
@@ -141,7 +141,7 @@ namespace Assignment2_UnitTests
             var output = lexicalAnalyzer.Tokenize("Hello" + nl + "World" + nl + "123");
             Assert.AreEqual("<Identifier (Hello) Line: 1>", output[0].getName());
             Assert.AreEqual("<Identifier (World) Line: 2>", output[1].getName());
-            Assert.AreEqual("<Integer (non-zero) (123) Line: 3>", output[2].getName());
+            Assert.AreEqual("<Integer (123) Line: 3>", output[2].getName());
         }
 
         [TestMethod]
