@@ -1,4 +1,5 @@
-﻿using System;
+﻿using COMP442_Assignment2.Syntactic;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,6 +16,11 @@ namespace COMP442_Assignment2
         public Form1()
         {
             InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            var syn = new SyntacticAnalyzer();
         }
     }
 }

@@ -10,6 +10,7 @@ namespace COMP442_Assignment2.Syntactic
     class SyntacticAnalyzer
     {
         Dictionary<Production, Dictionary<Token, Rule>> table = new Dictionary<Production, Dictionary<Token, Rule>>();
+        List<Rule> rules = new List<Rule>();
 
         public SyntacticAnalyzer()
         {
@@ -63,7 +64,119 @@ namespace COMP442_Assignment2.Syntactic
                 TokenList.Class, TokenList.Identifier, TokenList.OpenCurlyBracket, varFuncList, TokenList.CloseCurlyBracket
             }); // classDecl -> class id { varFuncList } ; classDecl
             Rule r3 = new Rule(classDecl); // classDecl -> EPSILON
-            Rule r4 = new Rule(varFuncList, new List<IProduceable> { });
+            Rule r4 = new Rule(varFuncList, new List<IProduceable> { type, TokenList.Identifier, varFunc, varFuncList}); // varFuncList->type id varFunc varFuncList
+            Rule r5 = new Rule(varFuncList); // varFuncList -> EPSILON
+            Rule r6 = new Rule(varFunc, new List<IProduceable> { varDecl }); // varFunc-> varDecl
+            Rule r7 = new Rule(varFunc, new List<IProduceable> { funcDef }); // varFunc-> funcDef
+            Rule r8 = new Rule(progBody, new List<IProduceable> { TokenList.Program, funcBody, TokenList.SemiColon, funcList }); //progBody -> program funcBody ; funcList
+            Rule r9 = new Rule(funcList, new List<IProduceable> { type, TokenList.Identifier, funcDef, funcList}); //funcList -> type id funcDef funcList 
+            Rule r10 = new Rule(funcList); // funcList -> EPSILON
+            Rule r11 = new Rule(funcDef, new List<IProduceable> { TokenList.OpenParanthesis, fParams, TokenList.CloseParanthesis, funcBody}); //funcDef -> ( fParams ) funcBody ;
+            Rule r12 = new Rule(funcBody, new List<IProduceable> { TokenList.OpenCurlyBracket, funcBodyList, TokenList.CloseCurlyBracket}); //funcBody -> { funcBodyList }
+            Rule r13 = new Rule(funcBodyList, new List<IProduceable> { TokenList.IntRes, ntypeFuncBodyList}); //funcBodyList -> intRes ntypeFuncBodyList
+            Rule r14 = new Rule(funcBodyList, new List<IProduceable> { TokenList.FloatRes, ntypeFuncBodyList }); //funcBodyList -> floatRes ntypeFuncBodyList
+            Rule r15 = new Rule(funcBodyList, new List<IProduceable> { TokenList.Identifier, idtypeFuncBodyList }); //funcBodyList -> id idtypeFuncBodyList
+            Rule r16 = new Rule(funcBodyList); // funcBodyList -> EPSILON
+            Rule r17 = new Rule(idtypeFuncBodyList, new List<IProduceable> { TokenList.Identifier, varDecl, funcBodyList}); //idtypeFuncBodyList -> id varDecl funcBodyList
+            Rule r18 = new Rule(idtypeFuncBodyList, new List<IProduceable> { statement, funcBodyList}); //idtypeFuncBodyList -> statement funcBodyList
+            Rule r19 = new Rule(idtypeFuncBodyList, new List<IProduceable> { assignStat, TokenList.SemiColon, funcBodyList}); //idtypeFuncBodyList -> assignStat ; funcBodyList
+            Rule r20 = new Rule(ntypeFuncBodyList, new List<IProduceable> { TokenList.Identifier, varDecl, funcBodyList}); // ntypeFuncBodyList -> id varDecl funcBodyList
+            Rule r21 = new Rule(varDecl, new List<IProduceable> { arraySizeList, TokenList.SemiColon }); //varDecl -> arraySizeList ;
+            Rule r22 = new Rule(arraySizeList, new List<IProduceable> { arraySize, arraySizeList}); //arraySizeList -> arraySize arraySizeList 
+            Rule r23 = new Rule(arraySizeList); // arraySizeList -> EPSILON
+            Rule r24 = new Rule(statement, new List<IProduceable> {
+                TokenList.If, TokenList.OpenParanthesis, expr, TokenList.CloseParanthesis, TokenList.Then, statBlock, TokenList.Else, statBlock
+            }); // statement ->  if ( expr ) then statBlock else statBlock ;
+            Rule r25 = new Rule(statement, new List<IProduceable> {
+                TokenList.For, TokenList.OpenParanthesis, type, TokenList.Identifier, assignOp, expr, TokenList.SemiColon, relExpr, TokenList.SemiColon,
+                TokenList.Identifier, assignStat, TokenList.CloseParanthesis, statBlock, TokenList.SemiColon
+            }); // statement -> for ( type id assignOp expr ; relExpr ; id assignStat ) statBlock ;
+            Rule r26 = new Rule(statement, new List<IProduceable> {
+                TokenList.Get, TokenList.OpenParanthesis, TokenList.Identifier, variable, TokenList.CloseParanthesis, TokenList.SemiColon
+            }); // statement -> get(id variable);
+            Rule r27 = new Rule(statement, new List<IProduceable> { TokenList.Put, TokenList.OpenParanthesis, expr, TokenList.CloseParanthesis, TokenList.SemiColon }); // statement -> put ( expr ) ;
+            Rule r28 = new Rule(statement, new List<IProduceable> { TokenList.Return, TokenList.OpenParanthesis, expr, TokenList.CloseParanthesis, TokenList.SemiColon }); // statement -> return ( expr ) ;
+            Rule r29 = new Rule(assignStat, new List<IProduceable> { variable, assignOp, expr }); //assignStat -> variable assignOp expr
+            Rule r30 = new Rule(statBlock, new List<IProduceable> { TokenList.OpenCurlyBracket, statementList, TokenList.CloseCurlyBracket }); // statBlock -> { statementList }
+            Rule r31 = new Rule(statBlock, new List<IProduceable> { statement });  // statBlock -> statement
+            Rule r32 = new Rule(statBlock, new List<IProduceable> { TokenList.Identifier, assignStat, TokenList.SemiColon }); // statBlock -> id assignStat ;
+            Rule r33 = new Rule(statBlock); // statBlock -> EPSILON
+            Rule r34 = new Rule(statementList, new List<IProduceable> { statement, statementList}); // statementList -> statement statementList
+            Rule r35 = new Rule(statementList, new List<IProduceable> { TokenList.Identifier, assignStat, TokenList.SemiColon, statementList }); // statementList -> id assignStat ; statementList
+            Rule r36 = new Rule(statementList); // statementList -> EPSILON
+            Rule r37 = new Rule(expr, new List<IProduceable> { arithExpr, relOption }); // expr -> arithExpr relOption
+            Rule r38 = new Rule(relOption, new List<IProduceable> { relExpr }); // relOption->relExpr
+            Rule r39 = new Rule(relOption); // relOption -> EPSILON
+            Rule r40 = new Rule(relExpr, new List<IProduceable> { relOp, arithExpr }); //relExpr -> relOp arithExpr
+            Rule r41 = new Rule(arithExpr, new List<IProduceable> { term, arithExprPrime }); // arithExpr -> term arithExprPrime
+            Rule r42 = new Rule(arithExprPrime, new List<IProduceable> { addOp, term, arithExprPrime }); //arithExprPrime -> addOp term arithExprPrime
+            Rule r43 = new Rule(arithExprPrime); // arithExprPrime -> EPSILON
+            Rule r44 = new Rule(sign, new List<IProduceable> { TokenList.Plus }); // sign -> +
+            Rule r45 = new Rule(sign, new List<IProduceable> { TokenList.Minus }); // sign -> -
+            Rule r46 = new Rule(term, new List<IProduceable> { factor, termPrime}); //term -> factor termPrime
+            Rule r47 = new Rule(termPrime, new List<IProduceable> { multOp, factor, termPrime }); // termPrime -> multOp factor termPrime
+            Rule r48 = new Rule(termPrime); // termPrime -> EPSILON
+            Rule r49 = new Rule(factor, new List<IProduceable> { factorVarOrFunc }); // factor -> factorVarOrFunc
+            Rule r50 = new Rule(factor, new List<IProduceable> { num }); // factor -> num 
+            Rule r51 = new Rule(factor, new List<IProduceable> { TokenList.OpenParanthesis, arithExpr, TokenList.CloseParanthesis }); // factor -> ( arithExpr )
+            Rule r52 = new Rule(factor, new List<IProduceable> { TokenList.Not, factor }); // factor -> not factor
+            Rule r53 = new Rule(factor, new List<IProduceable> { sign, factor }); // factor -> sign factor
+            Rule r54 = new Rule(variable, new List<IProduceable> { indiceList, furtherIdNest }); // variable -> indiceList furtherIdNest
+            Rule r55 = new Rule(furtherIdNest, new List<IProduceable> { TokenList.Period, TokenList.Identifier, indiceList, furtherIdNest}); // furtherIdNest -> . id indiceList furtherIdNest
+            Rule r56 = new Rule(furtherIdNest); // furtherIdNest  -> EPSILON
+            Rule r57 = new Rule(factorVarOrFunc, new List<IProduceable> { TokenList.Identifier, furtherFactor}); // factorVarOrFunc -> id furtherFactor
+            Rule r58 = new Rule(furtherFactor, new List<IProduceable> { indiceList, furtherIndice }); //furtherFactor -> indiceList furtherIndice
+            Rule r59 = new Rule(furtherFactor, new List<IProduceable> { TokenList.OpenParanthesis, aParams, TokenList.CloseParanthesis }); //furtherFactor -> ( aParams )
+            Rule r60 = new Rule(furtherIndice, new List<IProduceable> { TokenList.Period, factorVarOrFunc}); //furtherIndice -> . factorVarOrFunc 
+            Rule r61 = new Rule(furtherIndice); // furtherIndice  -> EPSILON
+            Rule r62 = new Rule(indiceList, new List<IProduceable> { indice, indiceList}); // indiceList -> indice indiceList
+            Rule r63 = new Rule(indiceList); // indiceList -> EPSILON
+            Rule r64 = new Rule(indice, new List<IProduceable> { TokenList.OpenSquareBracket, arithExpr, TokenList.CloseSquareBracket }); // indice -> [ arithExpr ]
+            Rule r65 = new Rule(arraySize, new List<IProduceable> { TokenList.Integer}); // arraySize -> [ integer ]
+            Rule r66 = new Rule(type, new List<IProduceable> { TokenList.IntRes}); // type -> intRes
+            Rule r67 = new Rule(type, new List<IProduceable> { TokenList.FloatRes }); // type -> floatRes
+            Rule r68 = new Rule(type, new List<IProduceable> { TokenList.Identifier }); // type -> id
+            Rule r69 = new Rule(fParams, new List<IProduceable> { type, TokenList.Identifier, arraySizeList, fParamsTail}); // fParams -> type id arraySizeList fParamsTail
+            Rule r70 = new Rule(fParams); // fParams -> EPSILON
+            Rule r71 = new Rule(aParams, new List<IProduceable> { expr, aParamsTail}); // aParams -> expr aParamsTail
+            Rule r72 = new Rule(aParams); // aParams -> EPSILON
+            Rule r73 = new Rule(fParamsTail, new List<IProduceable> { TokenList.Comma, type, TokenList.Identifier, arraySizeList, fParamsTail}); // fParamsTail -> , type id arraySizeList fParamsTail
+            Rule r74 = new Rule(fParamsTail); // fParamsTail  -> EPSILON
+            Rule r75 = new Rule(aParamsTail, new List<IProduceable> { TokenList.Comma, expr, aParamsTail}); // aParamsTail -> , expr aParamsTail
+            Rule r76 = new Rule(aParamsTail); // aParamsTail  -> EPSILON
+            Rule r77 = new Rule(assignOp, new List<IProduceable> { TokenList.EqualsToken }); // assignOp -> =
+
+            // relOp -> == | <> | < | > | <= | >=
+            Rule r78 = new Rule(relOp, new List<IProduceable> { TokenList.DoubleEquals});
+            Rule r79 = new Rule(relOp, new List<IProduceable> { TokenList.NotEqual });
+            Rule r80 = new Rule(relOp, new List<IProduceable> { TokenList.LessThan });
+            Rule r81 = new Rule(relOp, new List<IProduceable> { TokenList.GreaterThan });
+            Rule r82 = new Rule(relOp, new List<IProduceable> { TokenList.LessThanOrEqual });
+            Rule r83 = new Rule(relOp, new List<IProduceable> { TokenList.GreaterThanOrEqual });
+
+            // addOp -> + | - | or
+            Rule r84 = new Rule(addOp, new List<IProduceable> { TokenList.Plus });
+            Rule r85 = new Rule(addOp, new List<IProduceable> { TokenList.Minus });
+            Rule r86 = new Rule(addOp, new List<IProduceable> { TokenList.Or });
+
+            // multOp -> * | / | and
+            Rule r87 = new Rule(multOp, new List<IProduceable> { TokenList.Asterisk });
+            Rule r88 = new Rule(multOp, new List<IProduceable> { TokenList.Slash });
+            Rule r89 = new Rule(multOp, new List<IProduceable> { TokenList.And });
+
+            // num -> integer | float
+            Rule r90 = new Rule(num, new List<IProduceable> { TokenList.Integer});
+            Rule r91 = new Rule(num, new List<IProduceable> { TokenList.Float});
+
+            // I didn't write this out by hand, trust me
+            rules.AddRange(new List<Rule> { r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14,
+                r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31, r32,
+                r33, r34, r35, r36, r37, r38, r39, r40, r41, r42, r43, r44, r45, r46, r47, r48, r49, r50,
+                r51, r52, r53, r54, r55, r56, r57, r58, r59, r60, r61, r62, r63, r64, r65, r66, r67, r68,
+                r69, r70, r71, r72, r73, r74, r75, r76, r77, r78, r79, r80, r81, r82, r83, r84, r85, r86, r87, r88, r89, r90, r91 });
+
+
+
         }
     }
 }
