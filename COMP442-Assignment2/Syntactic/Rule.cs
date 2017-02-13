@@ -14,7 +14,7 @@ namespace COMP442_Assignment2.Syntactic
         public Rule(Production production)
         {
             _production = production;
-            _symbols = new List<IProduceable>();
+            _symbols = new List<IProduceable> { Tokens.TokenList.Epsilon};
         }
 
         public Rule(Production production, List<IProduceable> symbols)
@@ -22,5 +22,21 @@ namespace COMP442_Assignment2.Syntactic
             _production = production;
             _symbols = symbols;
         }
+
+        public string printProduction()
+        {
+            return string.Format("{0} -> {1}", _production.getProductName(), string.Join(" ", _symbols.Select(x => x.getProductName())));
+        }
+
+        public Production getProduction()
+        {
+            return _production;
+        }
+
+        public List<IProduceable> getSymbols()
+        {
+            return _symbols;
+        }
+
     }
 }

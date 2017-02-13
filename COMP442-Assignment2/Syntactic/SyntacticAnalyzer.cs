@@ -59,9 +59,9 @@ namespace COMP442_Assignment2.Syntactic
             Production multOp = new Production("multOp");
             Production num = new Production("num");
 
-            Rule r1 = new Rule(prog, new List<IProduceable> { TokenList.Class, TokenList.Program }); // prog -> classDecl
+            Rule r1 = new Rule(prog, new List<IProduceable> { classDecl, progBody }); // prog -> classDecl progBody
             Rule r2 = new Rule(classDecl, new List<IProduceable> {
-                TokenList.Class, TokenList.Identifier, TokenList.OpenCurlyBracket, varFuncList, TokenList.CloseCurlyBracket
+                TokenList.Class, TokenList.Identifier, TokenList.OpenCurlyBracket, varFuncList, TokenList.CloseCurlyBracket, TokenList.SemiColon, classDecl
             }); // classDecl -> class id { varFuncList } ; classDecl
             Rule r3 = new Rule(classDecl); // classDecl -> EPSILON
             Rule r4 = new Rule(varFuncList, new List<IProduceable> { type, TokenList.Identifier, varFunc, varFuncList}); // varFuncList->type id varFunc varFuncList
@@ -71,7 +71,7 @@ namespace COMP442_Assignment2.Syntactic
             Rule r8 = new Rule(progBody, new List<IProduceable> { TokenList.Program, funcBody, TokenList.SemiColon, funcList }); //progBody -> program funcBody ; funcList
             Rule r9 = new Rule(funcList, new List<IProduceable> { type, TokenList.Identifier, funcDef, funcList}); //funcList -> type id funcDef funcList 
             Rule r10 = new Rule(funcList); // funcList -> EPSILON
-            Rule r11 = new Rule(funcDef, new List<IProduceable> { TokenList.OpenParanthesis, fParams, TokenList.CloseParanthesis, funcBody}); //funcDef -> ( fParams ) funcBody ;
+            Rule r11 = new Rule(funcDef, new List<IProduceable> { TokenList.OpenParanthesis, fParams, TokenList.CloseParanthesis, funcBody, TokenList.SemiColon}); //funcDef -> ( fParams ) funcBody ;
             Rule r12 = new Rule(funcBody, new List<IProduceable> { TokenList.OpenCurlyBracket, funcBodyList, TokenList.CloseCurlyBracket}); //funcBody -> { funcBodyList }
             Rule r13 = new Rule(funcBodyList, new List<IProduceable> { TokenList.IntRes, ntypeFuncBodyList}); //funcBodyList -> intRes ntypeFuncBodyList
             Rule r14 = new Rule(funcBodyList, new List<IProduceable> { TokenList.FloatRes, ntypeFuncBodyList }); //funcBodyList -> floatRes ntypeFuncBodyList
@@ -85,7 +85,7 @@ namespace COMP442_Assignment2.Syntactic
             Rule r22 = new Rule(arraySizeList, new List<IProduceable> { arraySize, arraySizeList}); //arraySizeList -> arraySize arraySizeList 
             Rule r23 = new Rule(arraySizeList); // arraySizeList -> EPSILON
             Rule r24 = new Rule(statement, new List<IProduceable> {
-                TokenList.If, TokenList.OpenParanthesis, expr, TokenList.CloseParanthesis, TokenList.Then, statBlock, TokenList.Else, statBlock
+                TokenList.If, TokenList.OpenParanthesis, expr, TokenList.CloseParanthesis, TokenList.Then, statBlock, TokenList.Else, statBlock, TokenList.SemiColon
             }); // statement ->  if ( expr ) then statBlock else statBlock ;
             Rule r25 = new Rule(statement, new List<IProduceable> {
                 TokenList.For, TokenList.OpenParanthesis, type, TokenList.Identifier, assignOp, expr, TokenList.SemiColon, relExpr, TokenList.SemiColon,
@@ -132,7 +132,7 @@ namespace COMP442_Assignment2.Syntactic
             Rule r62 = new Rule(indiceList, new List<IProduceable> { indice, indiceList}); // indiceList -> indice indiceList
             Rule r63 = new Rule(indiceList); // indiceList -> EPSILON
             Rule r64 = new Rule(indice, new List<IProduceable> { TokenList.OpenSquareBracket, arithExpr, TokenList.CloseSquareBracket }); // indice -> [ arithExpr ]
-            Rule r65 = new Rule(arraySize, new List<IProduceable> { TokenList.Integer}); // arraySize -> [ integer ]
+            Rule r65 = new Rule(arraySize, new List<IProduceable> { TokenList.OpenSquareBracket, TokenList.Integer, TokenList.CloseSquareBracket}); // arraySize -> [ integer ]
             Rule r66 = new Rule(type, new List<IProduceable> { TokenList.IntRes}); // type -> intRes
             Rule r67 = new Rule(type, new List<IProduceable> { TokenList.FloatRes }); // type -> floatRes
             Rule r68 = new Rule(type, new List<IProduceable> { TokenList.Identifier }); // type -> id
@@ -177,6 +177,21 @@ namespace COMP442_Assignment2.Syntactic
 
 
 
+        }
+
+        public void printRules()
+        {
+            /*foreach(var rule in rules)
+            {
+                Console.WriteLine(rule.printProduction());
+            }*/
+
+            var grouping = rules.GroupBy(x => x.getProduction());
+
+            foreach(var group in grouping)
+            {
+                Console.WriteLine(string.Format("{0} -> {1}", group.Key.getProductName(), string.Join(" | ", group.Select(x => string.Join(" ", x.getSymbols().Select(y => y.getProductName()))))));
+            }
         }
     }
 }

@@ -10,10 +10,17 @@ namespace COMP442_Assignment2.Tokens
     public class Token : IProduceable
     {
         private string name;
+        private string symbol;
 
         public Token(string name)
         {
             this.name = name;
+        }
+
+        public Token(string name, string symbol)
+        {
+            this.name = name;
+            this.symbol = symbol;
         }
 
         public string getName()
@@ -23,43 +30,43 @@ namespace COMP442_Assignment2.Tokens
 
         public string getProductName()
         {
-            return name;
+            return string.IsNullOrEmpty(symbol) ? name : symbol;
         }
     }
 
     public static class TokenList
     {
         public static Token Error = new Token("Error");
-        public static Token Asterisk = new Token("Asterisk");
+        public static Token Asterisk = new Token("Asterisk", "*");
         public static Token LineComment = new Token("Line comment");
         public static Token BlockComment = new Token("Block comment");
-        public static Token Slash = new Token("Slash");
+        public static Token Slash = new Token("Slash", "/");
 
-        public static Token OpenParanthesis = new Token("Open parenthesis");
-        public static Token CloseParanthesis = new Token("Close parenthesis");
-        public static Token OpenCurlyBracket = new Token("Open curly bracket");
-        public static Token CloseCurlyBracket = new Token("Close curly bracket");
-        public static Token OpenSquareBracket = new Token("Open square bracket");
-        public static Token CloseSquareBracket = new Token("Close square bracket");
+        public static Token OpenParanthesis = new Token("Open parenthesis", "(");
+        public static Token CloseParanthesis = new Token("Close parenthesis", ")");
+        public static Token OpenCurlyBracket = new Token("Open curly bracket", "{");
+        public static Token CloseCurlyBracket = new Token("Close curly bracket", "}");
+        public static Token OpenSquareBracket = new Token("Open square bracket", "[");
+        public static Token CloseSquareBracket = new Token("Close square bracket", "]");
 
-        public static Token GreaterThanOrEqual = new Token("Greater than or equal");
-        public static Token GreaterThan = new Token("Greater than");
-        public static Token LessThanOrEqual = new Token("Less than or equal");
-        public static Token NotEqual = new Token("Not equal");
-        public static Token LessThan = new Token("Less than");
-        public static Token DoubleEquals = new Token("Double equals");
-        public static Token EqualsToken = new Token("Equals");
+        public static Token GreaterThanOrEqual = new Token("Greater than or equal", ">=");
+        public static Token GreaterThan = new Token("Greater than", ">");
+        public static Token LessThanOrEqual = new Token("Less than or equal", "<=");
+        public static Token NotEqual = new Token("Not equal", "<>");
+        public static Token LessThan = new Token("Less than", "<");
+        public static Token DoubleEquals = new Token("Double equals", "==");
+        public static Token EqualsToken = new Token("Equals", "=");
 
-        public static Token Period = new Token("Period");
-        public static Token SemiColon = new Token("Semi-colon");
-        public static Token Comma = new Token("Comma");
-        public static Token Plus = new Token("Plus");
-        public static Token Minus = new Token("Minus");
+        public static Token Period = new Token("Period", ".");
+        public static Token SemiColon = new Token("Semi-colon", ";");
+        public static Token Comma = new Token("Comma", ",");
+        public static Token Plus = new Token("Plus", "+");
+        public static Token Minus = new Token("Minus", "-");
 
         public static Token Float = new Token("Float");
         public static Token Integer = new Token("Integer");
 
-        public static Token Identifier = new Token("Identifier");
+        public static Token Identifier = new Token("Identifier", "id");
 
         public static Token And = new Token("and");
         public static Token Not = new Token("not");
@@ -77,6 +84,7 @@ namespace COMP442_Assignment2.Tokens
         public static Token Program = new Token("program");
 
         public static Token EndOfProgram = new Token("$");
+        public static Token Epsilon = new Token("EPSILON");
     }
 
 }

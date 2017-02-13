@@ -21,6 +21,7 @@ namespace COMP442_Assignment2
         private void Form1_Load(object sender, EventArgs e)
         {
             var syn = new SyntacticAnalyzer();
+            syn.printRules();
         }
     }
 }
