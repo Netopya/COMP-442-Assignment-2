@@ -1,0 +1,50 @@
+prog -> classDecl progBody
+classDecl -> class id { varFuncList } ; classDecl | EPSILON
+varFuncList -> type id varFunc varFuncList | EPSILON
+varFunc -> varDecl | funcDef
+progBody -> program funcBody ; funcList
+funcList -> type id funcDef funcList | EPSILON
+funcDef -> ( fParams ) funcBody ;
+funcBody -> { funcBodyList }
+funcBodyList -> intRes ntypeFuncBodyList | floatRes ntypeFuncBodyList | id idtypeFuncBodyList | EPSILON
+idtypeFuncBodyList -> id varDecl funcBodyList | statement funcBodyList | assignStat ; funcBodyList
+ntypeFuncBodyList -> id varDecl funcBodyList
+varDecl -> arraySizeList ;
+arraySizeList -> arraySize arraySizeList | EPSILON
+statement ->  if ( expr ) then statBlock else statBlock ;
+          | for ( type id assignOp expr ; relExpr ; id assignStat ) statBlock ;
+          | get ( id variable ) ;
+          | put ( expr ) ;
+          | return ( expr ) ;
+assignStat -> variable assignOp expr
+statBlock -> { statementList } | statement | id assignStat ; | EPSILON
+statementList -> statement statementList | id assignStat ; statementList | EPSILON
+expr -> arithExpr relOption
+relOption -> relExpr | EPSILON
+relExpr -> relOp arithExpr
+arithExpr -> term arithExprPrime
+arithExprPrime -> addOp term arithExprPrime | EPSILON
+sign -> + | -
+term -> factor termPrime
+termPrime -> multOp factor termPrime | EPSILON
+factor -> factorVarOrFunc | num | ( arithExpr ) | not factor | sign factor
+variable -> indiceList furtherIdNest
+furtherIdNest -> . id indiceList furtherIdNest | EPSILON
+factorVarOrFunc -> id furtherFactor
+furtherFactor -> indiceList furtherIndice | ( aParams )
+furtherIndice -> . factorVarOrFunc | EPSILON
+
+indiceList -> indice indiceList | EPSILON
+
+indice -> [ arithExpr ]
+arraySize -> [ integer ]
+type -> intRes | floatRes | id
+fParams -> type id arraySizeList fParamsTail | EPSILON
+aParams -> expr aParamsTail | EPSILON
+fParamsTail -> , type id arraySizeList fParamsTail | EPSILON
+aParamsTail -> , expr aParamsTail | EPSILON
+assignOp -> =
+relOp -> == | <> | < | > | <= | >=
+addOp -> + | - | or
+multOp -> * | / | and
+num -> integer | float
