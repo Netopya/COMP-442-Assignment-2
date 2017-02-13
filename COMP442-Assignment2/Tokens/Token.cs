@@ -23,6 +23,16 @@ namespace COMP442_Assignment2.Tokens
             this.symbol = symbol;
         }
 
+        public List<Token> getFirstSet()
+        {
+            return new List<Token> { this };
+        }
+
+        public List<Token> getFollowSet()
+        {
+            throw new NotImplementedException();
+        }
+
         public string getName()
         {
             return name;
@@ -63,8 +73,8 @@ namespace COMP442_Assignment2.Tokens
         public static Token Plus = new Token("Plus", "+");
         public static Token Minus = new Token("Minus", "-");
 
-        public static Token Float = new Token("Float");
-        public static Token Integer = new Token("Integer");
+        public static Token Float = new Token("Float", "float");
+        public static Token Integer = new Token("Integer", "integer");
 
         public static Token Identifier = new Token("Identifier", "id");
 
@@ -76,15 +86,15 @@ namespace COMP442_Assignment2.Tokens
         public static Token Else = new Token("else");
         public static Token For = new Token("for");
         public static Token Class = new Token("class");
-        public static Token IntRes = new Token("int");
-        public static Token FloatRes = new Token("float");
+        public static Token IntRes = new Token("int", "int");
+        public static Token FloatRes = new Token("float", "float");
         public static Token Get = new Token("get");
         public static Token Put = new Token("put");
         public static Token Return = new Token("return");
         public static Token Program = new Token("program");
 
         public static Token EndOfProgram = new Token("$");
-        public static Token Epsilon = new Token("EPSILON");
+        public static Token Epsilon = new Token("ε");
     }
 
 }

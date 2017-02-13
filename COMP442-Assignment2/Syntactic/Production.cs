@@ -10,8 +10,8 @@ namespace COMP442_Assignment2.Syntactic
     class Production : IProduceable
     {
         string _name;
-        List<Token> _firstSet;
-        List<Token> _followSet;
+        public List<Token> _firstSet { get; private set; }
+        public List<Token> _followSet { get; private set; }
 
         public Production(string name, List<Token> firstSet, List<Token> followSet)
         {
@@ -23,6 +23,16 @@ namespace COMP442_Assignment2.Syntactic
         public string getProductName()
         {
             return string.Format("{0}", _name);
+        }
+
+        public List<Token> getFirstSet()
+        {
+            return _firstSet;
+        }
+
+        public List<Token> getFollowSet()
+        {
+            return _followSet;
         }
     }
 }

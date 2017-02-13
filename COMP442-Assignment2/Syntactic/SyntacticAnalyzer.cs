@@ -11,6 +11,7 @@ namespace COMP442_Assignment2.Syntactic
     {
         Dictionary<Production, Dictionary<Token, Rule>> table = new Dictionary<Production, Dictionary<Token, Rule>>();
         List<Rule> rules = new List<Rule>();
+        List<Production> productions = new List<Production>();
 
         public SyntacticAnalyzer()
         {
@@ -58,6 +59,13 @@ namespace COMP442_Assignment2.Syntactic
             Production addOp = new Production("addOp", new List<Token> { TokenList.Plus, TokenList.Minus, TokenList.Or }, new List<Token> { TokenList.OpenParanthesis, TokenList.Not, TokenList.Identifier, TokenList.Plus, TokenList.Minus, TokenList.Integer, TokenList.Float });
             Production multOp = new Production("multOp", new List<Token> { TokenList.Asterisk, TokenList.Slash, TokenList.And}, new List<Token> { TokenList.OpenParanthesis, TokenList.Not, TokenList.Identifier, TokenList.Plus, TokenList.Minus, TokenList.Integer, TokenList.Float });
             Production num = new Production("num", new List<Token> { TokenList.Integer, TokenList.Float}, new List<Token> { TokenList.Asterisk, TokenList.Slash, TokenList.And, TokenList.Plus, TokenList.Minus, TokenList.Or, TokenList.CloseSquareBracket, TokenList.CloseParanthesis, TokenList.DoubleEquals, TokenList.NotEqual, TokenList.LessThan, TokenList.GreaterThan, TokenList.LessThanOrEqual, TokenList.GreaterThanOrEqual, TokenList.SemiColon, TokenList.Comma });
+
+            productions.AddRange(new List<Production> {
+                prog, classDecl, varFuncList, varFunc, progBody, funcList, funcDef, funcBody, funcBodyList,
+                idtypeFuncBodyList, ntypeFuncBodyList, varDecl, arraySizeList, statement, assignStat, statBlock, statementList, expr, relOption, relExpr, arithExpr,
+                arithExprPrime, sign, term, termPrime, factor, variable, furtherIdNest, factorVarOrFunc, furtherFactor, furtherIndice, indiceList, indice, arraySize,
+                type, fParams, aParams, fParamsTail, aParamsTail, assignOp, relOp, addOp, multOp, num
+            });
 
             Rule r1 = new Rule(prog, new List<IProduceable> { classDecl, progBody }); // prog -> classDecl progBody
             Rule r2 = new Rule(classDecl, new List<IProduceable> {
@@ -175,22 +183,71 @@ namespace COMP442_Assignment2.Syntactic
                 r51, r52, r53, r54, r55, r56, r57, r58, r59, r60, r61, r62, r63, r64, r65, r66, r67, r68,
                 r69, r70, r71, r72, r73, r74, r75, r76, r77, r78, r79, r80, r81, r82, r83, r84, r85, r86, r87, r88, r89, r90, r91 });
 
+            foreach (Rule rule in rules)
+            {
+                Production production = rule.getProduction();
+                if (!table.ContainsKey(production))
+                {
+                    table.Add(rule.getProduction(), new Dictionary<Token, Rule>());
+                }
 
+                IProduceable first = rule.getSymbols()[0];
 
+                bool epFound = false;
+
+                foreach (Token token in first.getFirstSet())
+                {
+                    if (token != TokenList.Epsilon)
+                    {
+                        if (table[production].ContainsKey(token))
+                            Console.WriteLine("Illegal Dulplicate Key");
+
+                        table[production].Add(token, rule);
+                        rule.addPredict(token);
+                    }
+                    else
+                        epFound = true;
+                }
+
+                if (epFound)
+                {
+                    foreach (Token token in production.getFollowSet())
+                    {
+                        if (table[production].ContainsKey(token))
+                            Console.WriteLine("Illegal Duplicate Key");
+
+                        table[production].Add(token, rule);
+                        rule.addPredict(token);
+                    }
+                }
+            }
+
+            Console.WriteLine("done!");
         }
 
         public void printRules()
         {
-            /*foreach(var rule in rules)
-            {
-                Console.WriteLine(rule.printProduction());
-            }*/
-
             var grouping = rules.GroupBy(x => x.getProduction());
 
             foreach(var group in grouping)
             {
                 Console.WriteLine(string.Format("{0} -> {1}", group.Key.getProductName(), string.Join(" | ", group.Select(x => string.Join(" ", x.getSymbols().Select(y => y.getProductName()))))));
+            }
+        }
+
+        public void printProductions()
+        {
+            foreach(var production in productions)
+            {
+                Console.WriteLine(string.Join(", ", production._followSet.Select(x => x.getProductName())));
+            }
+        }
+
+        public void printPredicts()
+        {
+            foreach(var rule in rules)
+            {
+                Console.WriteLine(string.Format("{1}", rule.getProduction().getProductName(), string.Join(", ", rule.getPredicts().Select(x => x.getProductName()))));
             }
         }
     }
