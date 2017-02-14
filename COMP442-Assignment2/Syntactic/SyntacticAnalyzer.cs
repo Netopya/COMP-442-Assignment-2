@@ -1,4 +1,5 @@
-﻿using COMP442_Assignment2.Tokens;
+﻿using COMP442_Assignment2.Lexical;
+using COMP442_Assignment2.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,10 @@ namespace COMP442_Assignment2.Syntactic
 {
     class SyntacticAnalyzer
     {
-        Dictionary<Production, Dictionary<Token, Rule>> table = new Dictionary<Production, Dictionary<Token, Rule>>();
+        Dictionary<IProduceable, Dictionary<Token, Rule>> table = new Dictionary<IProduceable, Dictionary<Token, Rule>>();
         List<Rule> rules = new List<Rule>();
         List<Production> productions = new List<Production>();
+        IProduceable startProduct;
 
         public SyntacticAnalyzer()
         {
@@ -66,6 +68,8 @@ namespace COMP442_Assignment2.Syntactic
                 arithExprPrime, sign, term, termPrime, factor, variable, furtherIdNest, factorVarOrFunc, furtherFactor, furtherIndice, indiceList, indice, arraySize,
                 type, fParams, aParams, fParamsTail, aParamsTail, assignOp, relOp, addOp, multOp, num
             });
+
+            startProduct = prog;
 
             Rule r1 = new Rule(prog, new List<IProduceable> { classDecl, progBody }); // prog -> classDecl progBody
             Rule r2 = new Rule(classDecl, new List<IProduceable> {
@@ -220,10 +224,61 @@ namespace COMP442_Assignment2.Syntactic
                         rule.addPredict(token);
                     }
                 }
+
+                if (epFound && first.isTerminal())
+                    Console.WriteLine("Skipping product: " + first.getProductName());
             }
 
             Console.WriteLine("done!");
         }
+
+        public bool analyzeSyntax(List<IToken> lexical)
+        {
+            Stack<IProduceable> parseStack = new Stack<IProduceable>();
+
+            parseStack.Push(TokenList.EndOfProgram);
+            parseStack.Push(startProduct);
+
+            var tokenEnumerator = lexical.GetEnumerator();
+            tokenEnumerator.MoveNext();
+
+            while(parseStack.Peek() != TokenList.EndOfProgram)
+            {
+                var top = parseStack.Peek();
+
+                if(top.isTerminal())
+                {
+                    if (top == tokenEnumerator.Current.getToken())
+                    {
+                        parseStack.Pop();
+                        tokenEnumerator.MoveNext();
+                    }
+                    else
+                        return false;
+                }
+                else
+                {
+                    Rule rule;
+                    Token token = tokenEnumerator.Current.getToken();
+                    var row = table[top];
+
+                    if (table[top].TryGetValue(token, out rule))
+                    {
+                        parseStack.Pop();
+
+                        for (int i = rule.getSymbols().Count - 1; i >= 0; i--)
+                        {
+                            parseStack.Push(rule.getSymbols()[i]);
+                        }
+                    }
+                    else
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
 
         public void printRules()
         {
