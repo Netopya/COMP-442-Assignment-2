@@ -33,7 +33,7 @@ namespace COMP442_Assignment2
 
             var tokens = analyzer.Tokenize(code);
 
-            Console.WriteLine(string.Join(" ", tokens.Where(x => !x.isError()).Select(x => x.getName()).ToArray()));
+            Console.WriteLine(string.Join(System.Environment.NewLine, tokens.Where(x => !x.isError()).Select(x => x.getName()).ToArray()));
 
             var syn = new SyntacticAnalyzer();
             var status = syn.analyzeSyntax(tokens);
@@ -41,6 +41,11 @@ namespace COMP442_Assignment2
             
 
             Console.WriteLine(status ? "Valid Syntax" : "Invalid Syntax");
+            label1.Text = status ? "Valid Syntax" : "Invalid Syntax";
+        }
+
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
 
         }
     }

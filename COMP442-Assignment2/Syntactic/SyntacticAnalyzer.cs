@@ -265,7 +265,11 @@ namespace COMP442_Assignment2.Syntactic
                         tokenEnumerator.MoveNext();
                     }
                     else
+                    {
+                        Console.WriteLine(string.Format("   Error Parsing terminal: Expecting {0}, got {1}", top.getProductName(), tokenEnumerator.Current.getToken().getProductName()));
                         return false;
+                    }
+                        
                 }
                 else
                 {
@@ -284,7 +288,11 @@ namespace COMP442_Assignment2.Syntactic
                         }
                     }
                     else
+                    {
+                        Console.WriteLine(string.Format("    Could not find rule for produce {0} to produce {1}", top.getProductName() ,token.getProductName()));
                         return false;
+                    }
+                        
                 }
             }
 
