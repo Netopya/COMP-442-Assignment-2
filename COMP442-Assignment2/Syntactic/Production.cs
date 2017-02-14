@@ -34,5 +34,10 @@ namespace COMP442_Assignment2.Syntactic
         {
             return _followSet;
         }
+
+        public bool isTerminal()
+        {
+            return false;
+        }
     }
 }

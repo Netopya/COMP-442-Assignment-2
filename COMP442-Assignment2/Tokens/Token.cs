@@ -42,6 +42,11 @@ namespace COMP442_Assignment2.Tokens
         {
             return string.IsNullOrEmpty(symbol) ? name : symbol;
         }
+
+        public bool isTerminal()
+        {
+            return true;
+        }
     }
 
     public static class TokenList

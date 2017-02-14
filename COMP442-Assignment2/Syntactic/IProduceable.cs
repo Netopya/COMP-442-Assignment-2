@@ -12,5 +12,6 @@ namespace COMP442_Assignment2.Syntactic
         string getProductName();
         List<Token> getFirstSet();
         List<Token> getFollowSet();
+        bool isTerminal();
     }
 }
