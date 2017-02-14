@@ -52,5 +52,36 @@ namespace COMP442_Assignment2.Syntactic
         {
             return _predicts;
         }
+
+        public List<Token> getTableSet()
+        {
+            List<Token> firstSets = new List<Token>();
+
+            bool epsilonFound = false;
+
+            foreach(IProduceable product in _symbols)
+            {
+                List<Token> productFirstSets = product.getFirstSet();
+
+                epsilonFound = false;
+
+                foreach(Token token in productFirstSets)
+                {
+                    if (token != TokenList.Epsilon)
+                        firstSets.Add(token);
+                    else
+                        epsilonFound = true;
+                }
+
+                if (!epsilonFound)
+                    break;
+            }
+
+            if (epsilonFound)
+                firstSets.AddRange(_production.getFollowSet());
+
+            return firstSets;
+            // Compute follow?
+        }
     }
 }

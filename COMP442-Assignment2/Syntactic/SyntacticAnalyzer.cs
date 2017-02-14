@@ -195,7 +195,16 @@ namespace COMP442_Assignment2.Syntactic
                     table.Add(rule.getProduction(), new Dictionary<Token, Rule>());
                 }
 
-                IProduceable first = rule.getSymbols()[0];
+                foreach (Token token in rule.getTableSet())
+                {
+                    if (table[production].ContainsKey(token))
+                        Console.WriteLine("Illegal Duplicate Key");
+
+                    table[production].Add(token, rule);
+                    rule.addPredict(token);
+                }
+
+                /*IProduceable first = rule.getSymbols()[0];
 
                 bool epFound = false;
 
@@ -226,7 +235,7 @@ namespace COMP442_Assignment2.Syntactic
                 }
 
                 if (epFound && first.isTerminal())
-                    Console.WriteLine("Skipping product: " + first.getProductName());
+                    Console.WriteLine("Skipping product: " + first.getProductName());*/
             }
 
             Console.WriteLine("done!");
@@ -234,6 +243,8 @@ namespace COMP442_Assignment2.Syntactic
 
         public bool analyzeSyntax(List<IToken> lexical)
         {
+            lexical.Add(new SimpleToken(TokenList.EndOfProgram, false));
+
             Stack<IProduceable> parseStack = new Stack<IProduceable>();
 
             parseStack.Push(TokenList.EndOfProgram);
@@ -268,7 +279,8 @@ namespace COMP442_Assignment2.Syntactic
 
                         for (int i = rule.getSymbols().Count - 1; i >= 0; i--)
                         {
-                            parseStack.Push(rule.getSymbols()[i]);
+                            if(rule.getSymbols()[i] != TokenList.Epsilon)
+                                parseStack.Push(rule.getSymbols()[i]);
                         }
                     }
                     else
