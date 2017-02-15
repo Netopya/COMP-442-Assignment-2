@@ -43,7 +43,9 @@ namespace COMP442_Assignment2
 
             var status = synAnalyzer.analyzeSyntax(tokens.Where(x => !x.isError()).ToList());
 
-            label1.Text = status ? "Valid Syntax" : "Invalid Syntax";
+            //label1.Text = status ? "Valid Syntax" : "Invalid Syntax";
+
+            Console.WriteLine(string.Join(Environment.NewLine, status.Derivation.Select(x => string.Join(" ", x.Select(y => y.getProductName()).Reverse()))));
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)

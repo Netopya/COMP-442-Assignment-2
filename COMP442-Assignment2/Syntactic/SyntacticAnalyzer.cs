@@ -242,8 +242,10 @@ namespace COMP442_Assignment2.Syntactic
             Console.WriteLine("done!");
         }
 
-        public bool analyzeSyntax(List<IToken> lexical)
+        public SyntaxResult analyzeSyntax(List<IToken> lexical)
         {
+            SyntaxResult results = new SyntaxResult();
+
             lexical.Add(new SimpleToken(TokenList.EndOfProgram, false));
 
             Stack<IProduceable> parseStack = new Stack<IProduceable>();
@@ -295,9 +297,11 @@ namespace COMP442_Assignment2.Syntactic
                     }
                         
                 }
+
+                results.Derivation.Add(new List<IProduceable>(parseStack));
             }
 
-            return true;
+            return results;
         }
 
         private void skipErrors(ref List<IToken>.Enumerator tokenEnumerator, Stack<IProduceable> parseStack)

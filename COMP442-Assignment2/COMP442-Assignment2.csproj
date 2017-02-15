@@ -69,6 +69,7 @@
     <Compile Include="Syntactic\Production.cs" />
     <Compile Include="Syntactic\Rule.cs" />
     <Compile Include="Syntactic\SyntacticAnalyzer.cs" />
+    <Compile Include="Syntactic\SyntaxResult.cs" />
     <Compile Include="Tokens\Token.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

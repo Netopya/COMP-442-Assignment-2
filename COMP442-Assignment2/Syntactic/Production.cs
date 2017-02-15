@@ -22,7 +22,7 @@ namespace COMP442_Assignment2.Syntactic
 
         public string getProductName()
         {
-            return string.Format("{0}", _name);
+            return string.Format("<{0}>", _name);
         }
 
         public List<Token> getFirstSet()
