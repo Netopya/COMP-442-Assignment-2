@@ -101,7 +101,7 @@ namespace COMP442_Assignment2.Syntactic
                 TokenList.If, TokenList.OpenParanthesis, expr, TokenList.CloseParanthesis, TokenList.Then, statBlock, TokenList.Else, statBlock, TokenList.SemiColon
             }); // statement ->  if ( expr ) then statBlock else statBlock ;
             Rule r25 = new Rule(statement, new List<IProduceable> {
-                TokenList.For, TokenList.OpenParanthesis, type, TokenList.Identifier, assignOp, expr, TokenList.SemiColon, relExpr, TokenList.SemiColon,
+                TokenList.For, TokenList.OpenParanthesis, type, TokenList.Identifier, assignOp, expr, TokenList.SemiColon, arithExpr, relExpr, TokenList.SemiColon,
                 TokenList.Identifier, assignStat, TokenList.CloseParanthesis, statBlock, TokenList.SemiColon
             }); // statement -> for ( type id assignOp expr ; relExpr ; id assignStat ) statBlock ;
             Rule r26 = new Rule(statement, new List<IProduceable> {
