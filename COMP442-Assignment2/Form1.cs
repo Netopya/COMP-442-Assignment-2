@@ -14,8 +14,14 @@ namespace COMP442_Assignment2
 {
     public partial class Form1 : Form
     {
+        LexicalAnalyzer lexAnalyzer;
+        SyntacticAnalyzer synAnalyzer;
+
         public Form1()
         {
+            lexAnalyzer = new LexicalAnalyzer();
+            synAnalyzer = new SyntacticAnalyzer();
+
             InitializeComponent();
         }
 
@@ -27,20 +33,16 @@ namespace COMP442_Assignment2
 
         private void button1_Click(object sender, EventArgs e)
         {
-            LexicalAnalyzer analyzer = new LexicalAnalyzer();
+            label1.Text = "analyzing...";
 
             var code = textBox1.Text;
 
-            var tokens = analyzer.Tokenize(code);
+            var tokens = lexAnalyzer.Tokenize(code);
 
-            Console.WriteLine(string.Join(System.Environment.NewLine, tokens.Where(x => !x.isError()).Select(x => x.getName()).ToArray()));
+            // SHOW LEX ERRORS
 
-            var syn = new SyntacticAnalyzer();
-            var status = syn.analyzeSyntax(tokens);
+            var status = synAnalyzer.analyzeSyntax(tokens.Where(x => !x.isError()).ToList());
 
-            
-
-            Console.WriteLine(status ? "Valid Syntax" : "Invalid Syntax");
             label1.Text = status ? "Valid Syntax" : "Invalid Syntax";
         }
 

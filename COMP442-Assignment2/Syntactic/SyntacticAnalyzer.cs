@@ -290,7 +290,7 @@ namespace COMP442_Assignment2.Syntactic
                     }
                     else
                     {
-                        Console.WriteLine(string.Format("    Could not find rule for produce {0} to produce {1} at line {2}", top.getProductName() ,token.getProductName(), tokenEnumerator.Current.getName()));
+                        Console.WriteLine(string.Format("    Could not find rule for produce {0} to produce {1} at token {2}", top.getProductName() ,token.getProductName(), tokenEnumerator.Current.getName()));
                         return false;
                     }
                         
