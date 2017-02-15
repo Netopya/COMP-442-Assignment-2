@@ -30,7 +30,7 @@ namespace COMP442_Assignment2.Tokens
 
         public List<Token> getFollowSet()
         {
-            throw new NotImplementedException();
+            return new List<Token>();
         }
 
         public string getName()

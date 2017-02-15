@@ -267,8 +267,8 @@ namespace COMP442_Assignment2.Syntactic
                     }
                     else
                     {
-                        Console.WriteLine(string.Format("   Error Parsing terminal: Expecting {0}, got {1}", top.getProductName(), tokenEnumerator.Current.getToken().getProductName()));
-                        return false;
+                        Console.WriteLine(string.Format("Error Parsing terminal: Expecting {0}, got {1} at token {2}", top.getProductName(), tokenEnumerator.Current.getToken().getProductName(), tokenEnumerator.Current.getName()));
+                        skipErrors(ref tokenEnumerator, parseStack);
                     }
                         
                 }
@@ -276,7 +276,7 @@ namespace COMP442_Assignment2.Syntactic
                 {
                     Rule rule;
                     Token token = tokenEnumerator.Current.getToken();
-                    var row = table[top];
+                    var row = table[top]; // consider removing
 
                     if (table[top].TryGetValue(token, out rule))
                     {
@@ -290,8 +290,8 @@ namespace COMP442_Assignment2.Syntactic
                     }
                     else
                     {
-                        Console.WriteLine(string.Format("    Could not find rule for produce {0} to produce {1} at token {2}", top.getProductName() ,token.getProductName(), tokenEnumerator.Current.getName()));
-                        return false;
+                        Console.WriteLine(string.Format("Could not find rule for produce {0} to produce {1} at token {2}", top.getProductName() ,token.getProductName(), tokenEnumerator.Current.getName()));
+                        skipErrors(ref tokenEnumerator, parseStack);
                     }
                         
                 }
@@ -300,6 +300,25 @@ namespace COMP442_Assignment2.Syntactic
             return true;
         }
 
+        private void skipErrors(ref List<IToken>.Enumerator tokenEnumerator, Stack<IProduceable> parseStack)
+        {
+            var topFirstSet = parseStack.Peek().getFirstSet();
+            var topFollowSet = parseStack.Peek().getFollowSet();
+
+            if (tokenEnumerator.Current.getToken() == TokenList.EndOfProgram || topFollowSet.Contains(tokenEnumerator.Current.getToken()))
+                parseStack.Pop();
+            else
+            {
+                while (!topFirstSet.Contains(tokenEnumerator.Current.getToken()) &&
+                    (!topFollowSet.Contains(tokenEnumerator.Current.getToken())))
+                {
+                    tokenEnumerator.MoveNext();
+                }
+            }
+
+            Console.WriteLine("    Resuming parsing at: " + tokenEnumerator.Current.getName());
+                
+        }
 
         public void printRules()
         {

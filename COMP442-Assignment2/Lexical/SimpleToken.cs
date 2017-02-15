@@ -53,5 +53,10 @@ namespace COMP442_Assignment2.Lexical
         {
             return _token;
         }
+
+        public int getLine()
+        {
+            return _line;
+        }
     }
 }

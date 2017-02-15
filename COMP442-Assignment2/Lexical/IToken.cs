@@ -17,5 +17,6 @@ namespace COMP442_Assignment2.Lexical
         void setInfo(string content, int line);
         bool isError();
         Token getToken();
+        int getLine();
     }
 }
