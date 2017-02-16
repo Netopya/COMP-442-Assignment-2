@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace COMP442_Assignment2.Syntactic
 {
-    class SyntacticAnalyzer
+    public class SyntacticAnalyzer
     {
         Dictionary<IProduceable, Dictionary<Token, Rule>> table = new Dictionary<IProduceable, Dictionary<Token, Rule>>();
         List<Rule> rules = new List<Rule>();
@@ -246,6 +246,8 @@ namespace COMP442_Assignment2.Syntactic
         {
             SyntaxResult results = new SyntaxResult();
 
+            lexical.RemoveAll(x => x.isError() || x.getToken() == TokenList.BlockComment || x.getToken() == TokenList.LineComment);
+
             lexical.Add(new SimpleToken(TokenList.EndOfProgram, false));
 
             Stack<IProduceable> parseStack = new Stack<IProduceable>();
@@ -269,8 +271,8 @@ namespace COMP442_Assignment2.Syntactic
                     }
                     else
                     {
-                        Console.WriteLine(string.Format("Error Parsing terminal: Expecting {0}, got {1} at token {2}", top.getProductName(), tokenEnumerator.Current.getToken().getProductName(), tokenEnumerator.Current.getName()));
-                        skipErrors(ref tokenEnumerator, parseStack);
+                        string resumeMessage = skipErrors(ref tokenEnumerator, parseStack);
+                        results.Errors.Add(string.Format("Error Parsing terminal: Expecting {0}, got {1} at token {2}. {3}", top.getProductName(), tokenEnumerator.Current.getToken().getProductName(), tokenEnumerator.Current.getName(), resumeMessage));
                     }
                         
                 }
@@ -292,8 +294,8 @@ namespace COMP442_Assignment2.Syntactic
                     }
                     else
                     {
-                        Console.WriteLine(string.Format("Could not find rule for produce {0} to produce {1} at token {2}", top.getProductName() ,token.getProductName(), tokenEnumerator.Current.getName()));
-                        skipErrors(ref tokenEnumerator, parseStack);
+                        string resumeMessage = skipErrors(ref tokenEnumerator, parseStack);
+                        results.Errors.Add(string.Format("Could not find rule for produce {0} to produce {1} at token {2}. {3}", top.getProductName() ,token.getProductName(), tokenEnumerator.Current.getName(), resumeMessage));
                     }
                         
                 }
@@ -304,7 +306,7 @@ namespace COMP442_Assignment2.Syntactic
             return results;
         }
 
-        private void skipErrors(ref List<IToken>.Enumerator tokenEnumerator, Stack<IProduceable> parseStack)
+        private string skipErrors(ref List<IToken>.Enumerator tokenEnumerator, Stack<IProduceable> parseStack)
         {
             var topFirstSet = parseStack.Peek().getFirstSet();
             var topFollowSet = parseStack.Peek().getFollowSet();
@@ -313,14 +315,14 @@ namespace COMP442_Assignment2.Syntactic
                 parseStack.Pop();
             else
             {
-                while (!topFirstSet.Contains(tokenEnumerator.Current.getToken()) &&
+                while (!(tokenEnumerator.Current == null) && !topFirstSet.Contains(tokenEnumerator.Current.getToken()) &&
                     (!topFollowSet.Contains(tokenEnumerator.Current.getToken())))
                 {
                     tokenEnumerator.MoveNext();
                 }
             }
 
-            Console.WriteLine("    Resuming parsing at: " + tokenEnumerator.Current.getName());
+             return "Resuming parsing at: " + (tokenEnumerator.Current == null ? "$" : tokenEnumerator.Current.getName());
                 
         }
 

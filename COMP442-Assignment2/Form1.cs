@@ -33,22 +33,38 @@ namespace COMP442_Assignment2
 
         private void button1_Click(object sender, EventArgs e)
         {
-            label1.Text = "analyzing...";
+            label1.Text = "Status: analyzing...";
 
-            var code = textBox1.Text;
+            var code = txtCodeInput.Text;
 
             var tokens = lexAnalyzer.Tokenize(code);
 
+            // Seperate the correct and error output
+            txtLexTokens.Text = string.Join(System.Environment.NewLine, tokens.Where(x => !x.isError()).Select(x => x.getName()).ToArray());
+            txtLexErrors.Text = string.Join(System.Environment.NewLine, tokens.Where(x => x.isError()).Select(x => x.getName()).ToArray());
+
+
             // SHOW LEX ERRORS
 
-            var status = synAnalyzer.analyzeSyntax(tokens.Where(x => !x.isError()).ToList());
+            var result = synAnalyzer.analyzeSyntax(tokens);
 
-            //label1.Text = status ? "Valid Syntax" : "Invalid Syntax";
+            label1.Text = result.Errors.Any() ? "Status: Error in Syntax" : "Status: Valid Syntax";
 
-            Console.WriteLine(string.Join(Environment.NewLine, status.Derivation.Select(x => string.Join(" ", x.Select(y => y.getProductName()).Reverse()))));
+            txtDerivation.Text = string.Join(Environment.NewLine, result.Derivation.Select(x => string.Join(" ", x.Select(y => y.getProductName()).Reverse())));
+            txtSynErrors.Text = string.Join(Environment.NewLine, result.Errors);
+
+            if(result.Derivation.Any())
+            {
+                tabControl1.SelectTab(2);
+            }
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
         {
 
         }
