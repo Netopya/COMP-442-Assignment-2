@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,8 @@ namespace COMP442_Assignment2
     {
         LexicalAnalyzer lexAnalyzer;
         SyntacticAnalyzer synAnalyzer;
+
+        string outputLocation = Application.StartupPath;
 
         public Form1()
         {
@@ -40,22 +43,43 @@ namespace COMP442_Assignment2
             var tokens = lexAnalyzer.Tokenize(code);
 
             // Seperate the correct and error output
-            txtLexTokens.Text = string.Join(System.Environment.NewLine, tokens.Where(x => !x.isError()).Select(x => x.getName()).ToArray());
-            txtLexErrors.Text = string.Join(System.Environment.NewLine, tokens.Where(x => x.isError()).Select(x => x.getName()).ToArray());
+            string lexicalTokens = string.Join(System.Environment.NewLine, tokens.Where(x => !x.isError()).Select(x => x.getName()).ToArray());
+            string errorTokens = string.Join(System.Environment.NewLine, tokens.Where(x => x.isError()).Select(x => x.getName()).ToArray());
+
+            txtLexTokens.Text = lexicalTokens;
+            txtLexErrors.Text = errorTokens;
+
+            outputToFile("outputLexicalTokens.txt", lexicalTokens);
+            outputToFile("outputLexicalErrors.txt", errorTokens);
 
 
             // SHOW LEX ERRORS
 
             var result = synAnalyzer.analyzeSyntax(tokens);
 
-            label1.Text = result.Errors.Any() ? "Status: Error in Syntax" : "Status: Valid Syntax";
+            string syntacticDerivation = string.Join(Environment.NewLine, result.Derivation.Select(x => string.Join(" ", x.Select(y => y.getProductName()).Reverse())));
+            string syntacticErrors = string.Join(Environment.NewLine, result.Errors);
 
-            txtDerivation.Text = string.Join(Environment.NewLine, result.Derivation.Select(x => string.Join(" ", x.Select(y => y.getProductName()).Reverse())));
-            txtSynErrors.Text = string.Join(Environment.NewLine, result.Errors);
+            txtDerivation.Text = syntacticDerivation;
+            txtSynErrors.Text = syntacticErrors;
 
-            if(result.Derivation.Any())
+            outputToFile("outputSyntacticDerivation.txt", syntacticDerivation);
+            outputToFile("outputSyntacticErrors.txt", syntacticErrors);
+
+            if (result.Derivation.Any())
             {
                 tabControl1.SelectTab(2);
+            }
+
+            label1.Text = result.Errors.Any() ? "Status: Error in Syntax" : "Status: Valid Syntax";
+        }
+
+        private void outputToFile(string filename, string data)
+        {
+            using (System.IO.StreamWriter file =
+                new System.IO.StreamWriter(outputLocation + filename, false))
+            {
+                file.WriteLine(data);
             }
         }
 
@@ -67,6 +91,11 @@ namespace COMP442_Assignment2
         private void label5_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("explorer.exe", outputLocation);
         }
     }
 }
