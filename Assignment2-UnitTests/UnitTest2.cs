@@ -49,5 +49,40 @@ namespace Assignment2_UnitTests
             result = syntacticAnalyzer.analyzeSyntax(tokens);
             Assert.IsTrue(result.Errors.Any());
         }
+
+        [TestMethod]
+        public void TestFunctionBody()
+        {
+            // illegal func decleration in program
+            var tokens = lexicalAnalyzer.Tokenize("program { int findMin(int array[100]){}; };");
+            var result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // func declaration in class
+            tokens = lexicalAnalyzer.Tokenize("class foo { int findMin(int array[100]){}; }; program {  };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // func declaration in functionlist
+            tokens = lexicalAnalyzer.Tokenize("program {  };  int findMin(int array[100]){};");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // different types of function types
+            tokens = lexicalAnalyzer.Tokenize("class foo { int findMin(int array[100]){}; float findMin(int array[100]){}; sometype findMin(int array[100]){};}; program {  };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // missing type
+            tokens = lexicalAnalyzer.Tokenize("class foo { findMin(int array[100]){}; }; program {  };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+        }
+
+        [TestMethod]
+        public void TestStatements()
+        {
+
+        }
     }
 }

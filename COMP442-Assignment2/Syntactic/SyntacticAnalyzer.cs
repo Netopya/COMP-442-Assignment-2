@@ -315,14 +315,14 @@ namespace COMP442_Assignment2.Syntactic
                 parseStack.Pop();
             else
             {
-                while (!(tokenEnumerator.Current == null) && !topFirstSet.Contains(tokenEnumerator.Current.getToken()) &&
+                while (!(tokenEnumerator.Current.getToken() == TokenList.EndOfProgram) && !topFirstSet.Contains(tokenEnumerator.Current.getToken()) &&
                     (!topFollowSet.Contains(tokenEnumerator.Current.getToken())))
                 {
                     tokenEnumerator.MoveNext();
                 }
             }
 
-             return "Resuming parsing at: " + (tokenEnumerator.Current == null ? "$" : tokenEnumerator.Current.getName());
+             return "Resuming parsing at: " + tokenEnumerator.Current.getName();
                 
         }
 
