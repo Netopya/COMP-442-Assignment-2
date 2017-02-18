@@ -82,7 +82,40 @@ namespace Assignment2_UnitTests
         [TestMethod]
         public void TestStatements()
         {
+            // Basic if statement
+            var tokens = lexicalAnalyzer.Tokenize("program { if (foo==3) then else; };");
+            var result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
 
+            // If with blocks 
+            tokens = lexicalAnalyzer.Tokenize("program { if (foo==3) then { foo = foo + 1; } else { foo = foo == 5; }; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // If with single line blocks 
+            tokens = lexicalAnalyzer.Tokenize("program { if (foo==3) then foo = foo + 1; else foo = foo == 5; ; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // If wrong placement of statement block 
+            tokens = lexicalAnalyzer.Tokenize("program { if (foo==3) { foo = foo + 1; } then else { foo = foo == 5; }; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // If with assignment instead of expr
+            tokens = lexicalAnalyzer.Tokenize("program { if (foo=3) then { foo = foo + 1; } else { foo = foo == 5; }; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Basic for statement
+            tokens = lexicalAnalyzer.Tokenize("program { for (int foo = 0; 45 > foo; foo = foo + 1) ; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Basic for statement with block
+            tokens = lexicalAnalyzer.Tokenize("program { for (int foo = 0; 45 > foo; foo = foo + 1) { foo = 3; } ; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
         }
     }
 }
