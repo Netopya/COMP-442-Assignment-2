@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace COMP442_Assignment2.Tokens
 {
+    /*
+        A producable symbol to represent a terminal symbol
+    */
     public class Token : IProduceable
     {
         private string name;
@@ -23,11 +26,13 @@ namespace COMP442_Assignment2.Tokens
             this.symbol = symbol;
         }
 
+        // A terminal's first set is a set with itself in it
         public List<Token> getFirstSet()
         {
             return new List<Token> { this };
         }
 
+        // A terminal's follow set it empty
         public List<Token> getFollowSet()
         {
             return new List<Token>();
@@ -38,6 +43,8 @@ namespace COMP442_Assignment2.Tokens
             return name;
         }
 
+        // If the token has a particular symbol we want to display
+        // return it instead of the name
         public string getProductName()
         {
             return string.IsNullOrEmpty(symbol) ? name : symbol;
@@ -49,6 +56,8 @@ namespace COMP442_Assignment2.Tokens
         }
     }
 
+    // A list of non-terminal symbols used by 
+    // the grammar
     public static class TokenList
     {
         public static Token Error = new Token("Error");
