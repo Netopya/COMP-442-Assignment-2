@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace COMP442_Assignment2.Syntactic
 {
+    /*
+        A non-terminal symbol in the grammar used by the syntactic analyzer
+
+        For COMP 442 Assignment 2 by Michael Bilinsky 26992358
+    */
     class Production : IProduceable
     {
         string _name;

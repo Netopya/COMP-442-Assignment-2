@@ -8,15 +8,32 @@ using System.Threading.Tasks;
 
 namespace COMP442_Assignment2.Syntactic
 {
+    /*
+        This syntactic analyzer is a top-down table
+        driven predictive parser. Non-terminal symbols (the beginning of all productions)
+        are held in Production classes and their first and follower sets are defined below.
+        All productions are defined in Rule classes. The table is also
+        automatically generated in this class.
+
+        For COMP 442 Assignment 2 by Michael Bilinsky 26992358
+    */
     public class SyntacticAnalyzer
     {
+        // The table for the table driver parser, a symbol and terminal token map to a rule
         Dictionary<IProduceable, Dictionary<Token, Rule>> table = new Dictionary<IProduceable, Dictionary<Token, Rule>>();
+
+        // List of rules
         List<Rule> rules = new List<Rule>();
+
+        // List of non-terminal symbols
         List<Production> productions = new List<Production>();
+
+        // The start symbol of the grammar
         IProduceable startProduct;
 
         public SyntacticAnalyzer()
         {
+            // The list of non-terminal symbols, their first and follow sets are passed to their constructor.
             Production prog = new Production("prog", new List<Token> { TokenList.Class, TokenList.Epsilon, TokenList.Program}, new List<Token> { TokenList.EndOfProgram});
             Production classDecl = new Production("classDecl", new List<Token> { TokenList.Class, TokenList.Epsilon}, new List<Token> { TokenList.Program});
             Production varFuncList = new Production("varFuncList", new List<Token> { TokenList.Epsilon, TokenList.IntRes, TokenList.FloatRes, TokenList.Identifier}, new List<Token> { TokenList.CloseCurlyBracket});
@@ -62,6 +79,7 @@ namespace COMP442_Assignment2.Syntactic
             Production multOp = new Production("multOp", new List<Token> { TokenList.Asterisk, TokenList.Slash, TokenList.And}, new List<Token> { TokenList.OpenParanthesis, TokenList.Not, TokenList.Identifier, TokenList.Plus, TokenList.Minus, TokenList.Integer, TokenList.Float });
             Production num = new Production("num", new List<Token> { TokenList.Integer, TokenList.Float}, new List<Token> { TokenList.Asterisk, TokenList.Slash, TokenList.And, TokenList.Plus, TokenList.Minus, TokenList.Or, TokenList.CloseSquareBracket, TokenList.CloseParanthesis, TokenList.DoubleEquals, TokenList.NotEqual, TokenList.LessThan, TokenList.GreaterThan, TokenList.LessThanOrEqual, TokenList.GreaterThanOrEqual, TokenList.SemiColon, TokenList.Comma });
 
+            // Generate a list of non-terminal symmbols
             productions.AddRange(new List<Production> {
                 prog, classDecl, varFuncList, varFunc, progBody, funcList, funcDef, funcBody, funcBodyList,
                 idtypeFuncBodyList, ntypeFuncBodyList, varDecl, arraySizeList, statement, assignStat, statBlock, statementList, expr, relOption, relExpr, arithExpr,
@@ -69,8 +87,10 @@ namespace COMP442_Assignment2.Syntactic
                 type, fParams, aParams, fParamsTail, aParamsTail, assignOp, relOp, addOp, multOp, num
             });
 
+            // The start production of this grammar
             startProduct = prog;
 
+            // All the rules defined in the grammar
             Rule r1 = new Rule(prog, new List<IProduceable> { classDecl, progBody }); // prog -> classDecl progBody
             Rule r2 = new Rule(classDecl, new List<IProduceable> {
                 TokenList.Class, TokenList.Identifier, TokenList.OpenCurlyBracket, varFuncList, TokenList.CloseCurlyBracket, TokenList.SemiColon, classDecl
@@ -188,76 +208,56 @@ namespace COMP442_Assignment2.Syntactic
                 r51, r52, r53, r54, r55, r56, r57, r58, r59, r60, r61, r62, r63, r64, r65, r66, r67, r68,
                 r69, r70, r71, r72, r73, r74, r75, r76, r77, r78, r79, r80, r81, r82, r83, r84, r85, r86, r87, r88, r89, r90, r91 });
 
+            // Generate the table for the predictions from the rules
             foreach (Rule rule in rules)
             {
                 Production production = rule.getProduction();
+
+                // Add a row in the table if it doesn't exist
                 if (!table.ContainsKey(production))
                 {
                     table.Add(rule.getProduction(), new Dictionary<Token, Rule>());
                 }
 
+
+                // Add the tokens for the rule to the table
                 foreach (Token token in rule.getTableSet())
                 {
+                    // Ensure that the grammar is a valid LL(1) grammar
                     if (table[production].ContainsKey(token))
                         Console.WriteLine("Illegal Duplicate Key");
 
                     table[production].Add(token, rule);
                     rule.addPredict(token);
                 }
-
-                /*IProduceable first = rule.getSymbols()[0];
-
-                bool epFound = false;
-
-                foreach (Token token in first.getFirstSet())
-                {
-                    if (token != TokenList.Epsilon)
-                    {
-                        if (table[production].ContainsKey(token))
-                            Console.WriteLine("Illegal Dulplicate Key");
-
-                        table[production].Add(token, rule);
-                        rule.addPredict(token);
-                    }
-                    else
-                        epFound = true;
-                }
-
-                if (epFound)
-                {
-                    foreach (Token token in production.getFollowSet())
-                    {
-                        if (table[production].ContainsKey(token))
-                            Console.WriteLine("Illegal Duplicate Key");
-
-                        table[production].Add(token, rule);
-                        rule.addPredict(token);
-                    }
-                }
-
-                if (epFound && first.isTerminal())
-                    Console.WriteLine("Skipping product: " + first.getProductName());*/
             }
 
             Console.WriteLine("done!");
         }
 
+        // The analyze method for the syntactic analyzer takes in a list
+        // of tokens from the lexical analyzer, derives the grammar and handles errors
         public SyntaxResult analyzeSyntax(List<IToken> lexical)
         {
             SyntaxResult results = new SyntaxResult();
 
+            // Remove all errors and comments from the lexical analyzer
             lexical.RemoveAll(x => x.isError() || x.getToken() == TokenList.BlockComment || x.getToken() == TokenList.LineComment);
-
+            
+            // Add an end of program token
             lexical.Add(new SimpleToken(TokenList.EndOfProgram, false));
 
+            // The stack for the table parser
             Stack<IProduceable> parseStack = new Stack<IProduceable>();
 
             parseStack.Push(TokenList.EndOfProgram);
             parseStack.Push(startProduct);
 
             var tokenEnumerator = lexical.GetEnumerator();
+            // Start enumerating over the list
             tokenEnumerator.MoveNext();
 
+            // The table driven algorithm as seen in class slides
             while(parseStack.Peek() != TokenList.EndOfProgram)
             {
                 var top = parseStack.Peek();
@@ -292,7 +292,7 @@ namespace COMP442_Assignment2.Syntactic
                                 parseStack.Push(rule.getSymbols()[i]);
                         }
                     }
-                    else
+                    else // if no entry exists for a symbol token pair, then it is an error
                     {
                         string resumeMessage = skipErrors(ref tokenEnumerator, parseStack);
                         results.Errors.Add(string.Format("Could not find rule for produce {0} to produce {1} at token {2}. {3}", top.getProductName() ,token.getProductName(), tokenEnumerator.Current.getName(), resumeMessage));
@@ -300,12 +300,14 @@ namespace COMP442_Assignment2.Syntactic
                         
                 }
 
+                // Add the current state of the stack to the derivation list
                 results.Derivation.Add(new List<IProduceable>(parseStack));
             }
 
             return results;
         }
 
+        // Skip errors in the syntax following the algorithm shown in class
         private string skipErrors(ref List<IToken>.Enumerator tokenEnumerator, Stack<IProduceable> parseStack)
         {
             var topFirstSet = parseStack.Peek().getFirstSet();
@@ -326,6 +328,7 @@ namespace COMP442_Assignment2.Syntactic
                 
         }
 
+        // Print a list of rules
         public void printRules()
         {
             var grouping = rules.GroupBy(x => x.getProduction());
@@ -336,6 +339,7 @@ namespace COMP442_Assignment2.Syntactic
             }
         }
 
+        // Print a list of non-terminal symbols
         public void printProductions()
         {
             foreach(var production in productions)
@@ -344,6 +348,7 @@ namespace COMP442_Assignment2.Syntactic
             }
         }
 
+        // Print a list of prediction sets
         public void printPredicts()
         {
             foreach(var rule in rules)

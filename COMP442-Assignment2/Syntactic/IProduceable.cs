@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace COMP442_Assignment2.Syntactic
 {
+    /*
+        A symbol in the grammar used by the syntactic anaylzer
+
+        For COMP 442 Assignment 2 by Michael Bilinsky 26992358
+    */
     public interface IProduceable
     {
         string getProductName();
