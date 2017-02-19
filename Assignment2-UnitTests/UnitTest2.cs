@@ -79,6 +79,7 @@ namespace Assignment2_UnitTests
             Assert.IsTrue(result.Errors.Any());
         }
 
+        // Test various types of statements
         [TestMethod]
         public void TestStatements()
         {
@@ -116,6 +117,67 @@ namespace Assignment2_UnitTests
             tokens = lexicalAnalyzer.Tokenize("program { for (int foo = 0; 45 > foo; foo = foo + 1) { foo = 3; } ; };");
             result = syntacticAnalyzer.analyzeSyntax(tokens);
             Assert.IsFalse(result.Errors.Any());
+
+            // Basic get statement
+            tokens = lexicalAnalyzer.Tokenize("program { get(foo); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Get statement with idnests
+            tokens = lexicalAnalyzer.Tokenize("program { get(foo[5][6].bar[1][100]); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Incorrect get statement with relation expression
+            tokens = lexicalAnalyzer.Tokenize("program { get(foo[5][6].bar[1][100] > monkey); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Basic put statement
+            tokens = lexicalAnalyzer.Tokenize("program { put(100); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Put statement with idnests
+            tokens = lexicalAnalyzer.Tokenize("program { put(foo[5][6].bar[1][100] > monkey); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Put statement with mathematic expression
+            tokens = lexicalAnalyzer.Tokenize("program { put(1 + 1); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Incorrect put statement with variable
+            tokens = lexicalAnalyzer.Tokenize("program { put(foo someid); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Basic return statement
+            tokens = lexicalAnalyzer.Tokenize("program { return(50); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Incorrect return statement with variable
+            tokens = lexicalAnalyzer.Tokenize("program { return(foo someid); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
         }
+
+        // Test statements in different locations
+        [TestMethod]
+        public void TestStatementLocation()
+        {
+            // Basic if in funcdef
+            var tokens = lexicalAnalyzer.Tokenize("program { }; int function() {if (foo==3) then else;};");
+            var result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // If statement in class decleration
+            tokens = lexicalAnalyzer.Tokenize("class className { int function() {if (foo==3) then else;}; }; program { };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+        }
+
     }
 }
