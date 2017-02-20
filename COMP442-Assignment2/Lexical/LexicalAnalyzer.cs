@@ -102,8 +102,8 @@ namespace COMP442_Assignment2.Lexical
             s8.addTransition(zero, s9);
             s8.addTransition(nonZero, s10);
 
-            IState s7 = new SimpleFinalState(true, TokenList.Integer, true); // Float (non-zero)
-            IState s5 = new SimpleFinalState(true, TokenList.Integer, true); // Float (zero)
+            IState s7 = new SimpleFinalState(true, TokenList.Integer, true); // Integer (non-zero)
+            IState s5 = new SimpleFinalState(true, TokenList.Integer, true); // Integer (zero)
             IState s6 = new SimpleIntermediateState(s7);
             s6.addTransition(digit, s6);
             s6.addTransition(period, s8);

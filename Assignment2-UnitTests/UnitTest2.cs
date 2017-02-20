@@ -162,6 +162,26 @@ namespace Assignment2_UnitTests
             tokens = lexicalAnalyzer.Tokenize("program { return(foo someid); };");
             result = syntacticAnalyzer.analyzeSyntax(tokens);
             Assert.IsTrue(result.Errors.Any());
+
+            // Test assignment statement
+            tokens = lexicalAnalyzer.Tokenize("program { foo = 300; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test assignment statement with expression
+            tokens = lexicalAnalyzer.Tokenize("program { foo = 300 + 3; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test illegal assignment statement with relop
+            tokens = lexicalAnalyzer.Tokenize("program { foo == 300; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Test illegal assignment statement with type
+            tokens = lexicalAnalyzer.Tokenize("program { int foo = 300; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
         }
 
         // Test statements in different locations
@@ -177,7 +197,202 @@ namespace Assignment2_UnitTests
             tokens = lexicalAnalyzer.Tokenize("class className { int function() {if (foo==3) then else;}; }; program { };");
             result = syntacticAnalyzer.analyzeSyntax(tokens);
             Assert.IsFalse(result.Errors.Any());
+
+            // If statement in func decleration
+            tokens = lexicalAnalyzer.Tokenize("class className { }; program { }; functype funcname() { if (foo==3) then else; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Illegal if statement outside of any body
+            tokens = lexicalAnalyzer.Tokenize("class className { }; program { }; if (foo==3) then else; functype funcname() { };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
         }
 
+        // Test variables and id nests
+        [TestMethod]
+        public void TestVariables()
+        {
+            // Basic variable declaration
+            var tokens = lexicalAnalyzer.Tokenize("program { int variablename; };");
+            var result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Basic variable declaration with id type
+            tokens = lexicalAnalyzer.Tokenize("program { idname variablename; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Illegal variable declaration without semi colon
+            tokens = lexicalAnalyzer.Tokenize("program { idname variablename };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Basic variable declaration with array size
+            tokens = lexicalAnalyzer.Tokenize("program { idname variablename[3][4]; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Illegal variable declaration without int array size
+            tokens = lexicalAnalyzer.Tokenize("program { idname variablename[3 + 1][4 - foo]; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Basic variable assignment
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = 20; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Variable assignment with basic indices
+            tokens = lexicalAnalyzer.Tokenize("program { variablename[3][2] = 20; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Variable assignment with arithmetic for indices
+            tokens = lexicalAnalyzer.Tokenize("program { variablename[3 + 1][foo * 2] = 20; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Illegal variable assignment with non-arithmetic assignments for indices
+            tokens = lexicalAnalyzer.Tokenize("program { variablename[4 > 1][foo <> 2] = 20; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Basic variable assignment with id nest
+            tokens = lexicalAnalyzer.Tokenize("program { variablename.someothername = 20; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Variable assignment id nest and indices
+            tokens = lexicalAnalyzer.Tokenize("program { variablename[3][4].someothername[1] = 20; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Illegal variable assignment with empty indice
+            tokens = lexicalAnalyzer.Tokenize("program { variablename[] = 20; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+        }
+
+        [TestMethod]
+        public void TestExpressions()
+        {
+            // Basic arithmetic expression that resolves to <term> then <factor>
+            var tokens = lexicalAnalyzer.Tokenize("program { variablename = 20; };");
+            var result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test addition and subtraction
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = 20 + 30 - 10; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test multiplication and division
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = 20 / 30 * 10; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test addition, subtraction, multiplication and division
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = 20 / 40 + 1 - 30 * 10; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // test illegal multiple multops
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = 20 / * 40; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // test illegal multops after addop
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = 20 + / 40; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Test relation expressions
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = 20 == 30; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test illegal multiple relation expressions
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = 20 == 30 <> 10; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+        }
+
+        [TestMethod]
+        public void TestFactors()
+        {
+            // Test basic factor num to int
+            var tokens = lexicalAnalyzer.Tokenize("program { variablename = 20; };");
+            var result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test basic factor num to float
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = 20.1; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test basic function call
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = funcName(); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test basic function call with id nest
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = somevariable.funcName(); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test function call with id nest and indices
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = somevariable[3][1].funcName(); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test illegal function call with id nest and indices
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = somevariable.funcName[1][2](); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Test function call with parameters
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = somevariable.funcName(1, 200); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test arithmetic expression with brackets
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = (2); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test arithmetic expression with brackets and operations
+            tokens = lexicalAnalyzer.Tokenize("program { variablename =  1 - (2 + 2) / 2; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test arithmetic expression with brackets, relexpr, and operations
+            tokens = lexicalAnalyzer.Tokenize("program { variablename =  1 <> (2 + 2) / 2; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test illegal parenthesization with relationship expression
+            tokens = lexicalAnalyzer.Tokenize("program { variablename =  1 - (2 < 2); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Test not factor
+            tokens = lexicalAnalyzer.Tokenize("program { variablename =  not 2; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test factor not another factor
+            tokens = lexicalAnalyzer.Tokenize("program { variablename =  not somevariable; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test factor not in a relexpr
+            tokens = lexicalAnalyzer.Tokenize("program { variablename =  not 1 > 2; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+        }
+
+        
     }
 }
