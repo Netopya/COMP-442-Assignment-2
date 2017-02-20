@@ -391,6 +391,25 @@ namespace Assignment2_UnitTests
             result = syntacticAnalyzer.analyzeSyntax(tokens);
             Assert.IsFalse(result.Errors.Any());
 
+            // Test basic sign
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = -2; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test mutiple signs
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = - - + - +2; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test sign to factor
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = - (2 + 1); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Illegal Test sign to relexp
+            tokens = lexicalAnalyzer.Tokenize("program { variablename = - (2 > 1); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
         }
 
         
