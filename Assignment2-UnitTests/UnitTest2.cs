@@ -412,6 +412,149 @@ namespace Assignment2_UnitTests
             Assert.IsTrue(result.Errors.Any());
         }
 
-        
+        // Test various parameters for function declarations
+        [TestMethod]
+        public void TestFParams()
+        {
+            // Test basic function in func body
+            var tokens = lexicalAnalyzer.Tokenize("program { }; idname funname() {};");
+            var result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test function in class
+            tokens = lexicalAnalyzer.Tokenize("class classname { idname funname() {}; }; program { };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test function with int and float
+            tokens = lexicalAnalyzer.Tokenize("program { }; int funname() {}; float funname() {};");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test illegal function in program
+            tokens = lexicalAnalyzer.Tokenize("program {  idname funname() {}; }; ");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Test function with parameters
+            tokens = lexicalAnalyzer.Tokenize("program { }; idname funname(idname param1) {};");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test function with arraysize
+            tokens = lexicalAnalyzer.Tokenize("program { }; idname funname(idname param1[1]) {};");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test function with multiple parameters
+            tokens = lexicalAnalyzer.Tokenize("program { }; idname funname(idname param1, float param1, int param3, idname2 param4) {};");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test illegal idnest
+            tokens = lexicalAnalyzer.Tokenize("program { }; idname funname(idname param1.foo) {};");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Test illegal missing comma
+            tokens = lexicalAnalyzer.Tokenize("program { }; idname funname(idname param1 int param2) {};");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Test illegal expression
+            tokens = lexicalAnalyzer.Tokenize("program { }; idname funname(3 + 2) {};");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+        }
+
+        // Test various permutations of function calls
+        [TestMethod]
+        public void TestAParams()
+        {
+            // Test basic function call in program
+            var tokens = lexicalAnalyzer.Tokenize("program { idname = funcname(); };");
+            var result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test basic function call in class
+            tokens = lexicalAnalyzer.Tokenize("class classname { int func() { idname = funcname(); }; }; program {  };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test illegal hanging function call
+            tokens = lexicalAnalyzer.Tokenize("program { funcname(); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Test illegal function call outside of program
+            tokens = lexicalAnalyzer.Tokenize("program { }; funcname();");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Test illegal function call  in a class body
+            tokens = lexicalAnalyzer.Tokenize("class classname { funcname(); }; program { }; ");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Test function call with parameter
+            tokens = lexicalAnalyzer.Tokenize("program { idname = funcname(param1); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test function call with multiple parameters
+            tokens = lexicalAnalyzer.Tokenize("program { idname = funcname(param1, param2, param3); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test function call with multiple different expressions
+            tokens = lexicalAnalyzer.Tokenize("program { idname = funcname(param1, 1 + 3, 1 / (2 + 1), somefunc(), var[1][2].var[1]); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test illegal function call with type
+            tokens = lexicalAnalyzer.Tokenize("program { idname = funcname(int number); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Test illegal function call with missing comma
+            tokens = lexicalAnalyzer.Tokenize("program { idname = funcname(param1 param2); };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+        }
+
+        // Test relationship operations
+        [TestMethod]
+        public void TestRelationOperators()
+        {
+            
+            List<IToken> tokens;
+            SyntaxResult result;
+
+            // Test relation operations
+            List<string> reops = new List<string> { "==", "<>", "<", ">", "<=", ">="};
+
+            foreach(string op in reops)
+            {
+                tokens = lexicalAnalyzer.Tokenize("program { idname = 1 " + op + " 2; };");
+                result = syntacticAnalyzer.analyzeSyntax(tokens);
+                Assert.IsFalse(result.Errors.Any());
+            }
+
+            // Test illegal relation operations
+            reops = new List<string> { "=<", "=>", "<<", ">>", "===" };
+
+            foreach (string op in reops)
+            {
+                tokens = lexicalAnalyzer.Tokenize("program { idname = 1 " + op + " 2; };");
+                result = syntacticAnalyzer.analyzeSyntax(tokens);
+                Assert.IsTrue(result.Errors.Any());
+            }
+        }
+
+        [TestMethod]
+        public void TestNum()
+        {
+
+        }
     }
 }
