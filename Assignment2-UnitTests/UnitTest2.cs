@@ -113,10 +113,20 @@ namespace Assignment2_UnitTests
             result = syntacticAnalyzer.analyzeSyntax(tokens);
             Assert.IsFalse(result.Errors.Any());
 
+            // Basic for statement with identifier type
+            tokens = lexicalAnalyzer.Tokenize("program { for (idname foo = 0; 45 > foo; foo = foo + 1) ; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
             // Basic for statement with block
             tokens = lexicalAnalyzer.Tokenize("program { for (int foo = 0; 45 > foo; foo = foo + 1) { foo = 3; } ; };");
             result = syntacticAnalyzer.analyzeSyntax(tokens);
             Assert.IsFalse(result.Errors.Any());
+
+            // Illegal for statement no semicolons
+            tokens = lexicalAnalyzer.Tokenize("program { for (int foo = 0 45 > foo foo = foo + 1) { foo = 3; } ; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
 
             // Basic get statement
             tokens = lexicalAnalyzer.Tokenize("program { get(foo); };");
@@ -180,6 +190,16 @@ namespace Assignment2_UnitTests
 
             // Test illegal assignment statement with type
             tokens = lexicalAnalyzer.Tokenize("program { int foo = 300; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Test illegal statement with missing semi-colon
+            tokens = lexicalAnalyzer.Tokenize("program { foo = 300 };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+
+            // Test illegal assignment of a statement
+            tokens = lexicalAnalyzer.Tokenize("program { foo = { bar = 300 } };");
             result = syntacticAnalyzer.analyzeSyntax(tokens);
             Assert.IsTrue(result.Errors.Any());
         }
@@ -554,7 +574,34 @@ namespace Assignment2_UnitTests
         [TestMethod]
         public void TestNum()
         {
+            // Test basic int
+            var tokens = lexicalAnalyzer.Tokenize("program { idname = 12; };");
+            var result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
 
+            // Test basic float
+            tokens = lexicalAnalyzer.Tokenize("program { idname = 12.23; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test illegal float
+            tokens = lexicalAnalyzer.Tokenize("program { idname = 12.230; };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsTrue(result.Errors.Any());
+        }
+
+        [TestMethod]
+        public void TestComments()
+        {
+            // Test block comment
+            var tokens = lexicalAnalyzer.Tokenize("program { /* A block comment */ };");
+            var result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
+
+            // Test line comment
+            tokens = lexicalAnalyzer.Tokenize("program { // A line comment" + Environment.NewLine + " };");
+            result = syntacticAnalyzer.analyzeSyntax(tokens);
+            Assert.IsFalse(result.Errors.Any());
         }
     }
 }
