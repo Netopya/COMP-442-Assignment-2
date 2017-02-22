@@ -77,7 +77,7 @@ namespace COMP442_Assignment2
         private void outputToFile(string filename, string data)
         {
             using (System.IO.StreamWriter file =
-                new System.IO.StreamWriter(outputLocation + filename, false))
+                new System.IO.StreamWriter(outputLocation + "/" + filename, false))
             {
                 file.WriteLine(data);
             }
